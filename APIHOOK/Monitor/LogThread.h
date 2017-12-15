@@ -1,3 +1,5 @@
 #pragma once
 
-extern DWORD WINAPI LogThreadProc(LPVOID lpParameter);
+extern HANDLE hSemaphoreInject;
+
+DWORD WINAPI LogThreadProc(LPVOID lpParameter);
