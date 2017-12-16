@@ -21,6 +21,7 @@ int main()
 	OutputDebugStringW(L"\n");
 	*/
 
+	//APIHOOK_Monitor_Semaphore_Status TEST
 	/*
 	HANDLE hSemaphoreStatus;
 	//hSemaphoreStatus = OpenSemaphore(SYNCHRONIZE, FALSE, L"APIHOOK_Monitor_Semaphore_Status");
@@ -35,8 +36,10 @@ int main()
 	hSemaphoreStatus = NULL;
 	*/
 
+	//Mailslot TEST
+	/*
 	HANDLE hWriteMailslot = NULL;
-	hWriteMailslot = CreateFile(L"\\\\.\\mailslot\\APIHOOK\\Monitor\\Log", 
+	hWriteMailslot = CreateFile(L"\\\\*\\mailslot\\APIHOOK\\Monitor\\Log", 
 		GENERIC_WRITE, 
 		FILE_SHARE_READ, 
 		NULL, 
@@ -46,6 +49,7 @@ int main()
 	if (INVALID_HANDLE_VALUE == hWriteMailslot)
 	{
 		OutputDebugString(L"FUCK!!!!\n");
+		system("PAUSE");
 		return 0;
 	}
 	for (int j=0;j<5;j++)
@@ -56,6 +60,10 @@ int main()
 		WriteFile(hWriteMailslot, L"ÄãºÃºÇºÇ\r\n", a, &b, NULL);
 		Sleep(100);
 	}
+	*/
+
+
+
     return 0;
 }
 
