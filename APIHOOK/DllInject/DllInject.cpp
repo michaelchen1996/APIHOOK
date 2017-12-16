@@ -10,7 +10,6 @@
 int main()
 {
 	WCHAR szCurrentDirectory[MAX_PATH];
-	DWORD dwCurDirPathLen;
 	HANDLE hProcess = NULL;
 	DWORD dwPIdList[MAX_TARGET_NUM];
 	DWORD dwNumTarget = 0;
@@ -18,22 +17,7 @@ int main()
 
 
 	//GetModuleFileName
-	dwCurDirPathLen = GetModuleFileName(NULL, szCurrentDirectory, MAX_PATH);
-	if (!dwCurDirPathLen)
-	{
-		printf("GetModuleFileName ERROR\n");
-		return 0;
-	}
-	SIZE_T i = 0;
-	StringCbLengthW(szCurrentDirectory, MAX_PATH, &i);
-	if (0 == i)
-	{
-		return 0;
-	}
-	for (; i > 0 && L'\\' != szCurrentDirectory[i-1]; i--){}
-	szCurrentDirectory[i] = L'\0';
-	OutputDebugString(szCurrentDirectory);
-	OutputDebugString(L"\n");
+	GetModuleDirectory(szCurrentDirectory);
 
 	//SetPrivilege
 	if (!SetPrivilege(SE_DEBUG_NAME, TRUE))
@@ -74,6 +58,27 @@ int main()
 	return 0;
 }
 
+VOID GetModuleDirectory(PWCHAR szCurrentDirectory)
+{
+	DWORD dwCurDirPathLen;
+	dwCurDirPathLen = GetModuleFileName(NULL, szCurrentDirectory, MAX_PATH);
+	if (!dwCurDirPathLen)
+	{
+		printf("GetModuleFileName ERROR\n");
+		return;
+	}
+	SIZE_T i = 0;
+	StringCbLengthW(szCurrentDirectory, MAX_PATH, &i);
+	if (0 == i)
+	{
+		return;
+	}
+	for (; i > 0 && L'\\' != szCurrentDirectory[i - 1]; i--) {}
+	szCurrentDirectory[i] = L'\0';
+	OutputDebugString(szCurrentDirectory);
+	OutputDebugString(L"\n");
+
+}
 
 DWORD ReadTargetList(LPCWCHAR szCurrentDirectory, LPDWORD dwPIdList) {
 	DWORD dwTargetNum = 0;
