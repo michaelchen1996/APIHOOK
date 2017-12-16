@@ -3,6 +3,7 @@
 
 #include "stdafx.h"
 #include "windows.h"
+#include "strsafe.h"
 
 
 int main()
@@ -20,6 +21,7 @@ int main()
 	OutputDebugStringW(L"\n");
 	*/
 
+	/*
 	HANDLE hSemaphoreStatus;
 	//hSemaphoreStatus = OpenSemaphore(SYNCHRONIZE, FALSE, L"APIHOOK_Monitor_Semaphore_Status");
 	hSemaphoreStatus = CreateSemaphore(NULL, 0, 1, L"APIHOOK_Monitor_Semaphore_Status");
@@ -31,7 +33,29 @@ int main()
 	ReleaseSemaphore(hSemaphoreStatus, 1, NULL);
 	CloseHandle(hSemaphoreStatus);
 	hSemaphoreStatus = NULL;
+	*/
 
+	HANDLE hWriteMailslot = NULL;
+	hWriteMailslot = CreateFile(L"\\\\.\\mailslot\\APIHOOK\\Monitor\\Log", 
+		GENERIC_WRITE, 
+		FILE_SHARE_READ, 
+		NULL, 
+		OPEN_EXISTING,
+		FILE_ATTRIBUTE_NORMAL,
+		NULL);
+	if (INVALID_HANDLE_VALUE == hWriteMailslot)
+	{
+		OutputDebugString(L"FUCK!!!!\n");
+		return 0;
+	}
+	for (int j=0;j<5;j++)
+	{
+		SIZE_T a;
+		DWORD b,c;
+		StringCbLength(L"ÄãºÃºÇºÇ\r\n", MAX_PATH, &a);
+		WriteFile(hWriteMailslot, L"ÄãºÃºÇºÇ\r\n", a, &b, NULL);
+		Sleep(100);
+	}
     return 0;
 }
 
