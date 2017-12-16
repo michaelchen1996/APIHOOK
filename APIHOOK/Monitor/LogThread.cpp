@@ -15,8 +15,27 @@ DWORD WINAPI LogThreadProc(LPVOID lpParameter)
 	BOOL isStopped = FALSE;
 	WCHAR szReadBuf[MAX_LOG_SIZE];
 	WCHAR szCurrentLogPath[MAX_PATH];
+	WCHAR szCurrentDirectory[MAX_PATH];
 
-
+	//Get Monitor.exe directory, in order to read config file
+	GetModuleDirectory(szCurrentDirectory);
+	StringCbCopy(szCurrentLogPath, MAX_PATH, szCurrentDirectory);
+	StringCbCat(szCurrentLogPath, MAX_PATH, L"Logs\\");
+	if (CreateDirectory(szCurrentLogPath, NULL))
+	{
+		OutputDebugString(L"Create New Log Directory\n");
+	}
+	else if (ERROR_ALREADY_EXISTS == GetLastError())
+	{
+		OutputDebugString(L"Log Directory Exists\n");
+	}
+	else
+	{
+		OutputDebugString(L"CreateDirectory ERROR\n");
+		return 0;
+	}
+	
+	//create status semaphore
 	hSemaphoreStatus = CreateSemaphore(NULL, 0, 1, L"APIHOOK_Monitor_Semaphore_Status");
 	if (!hSemaphoreStatus)
 	{
@@ -24,7 +43,7 @@ DWORD WINAPI LogThreadProc(LPVOID lpParameter)
 		return 0;
 	}
 
-	//create slot
+	//create mailslot
 	hMailslotLog = CreateMailslot(L"\\\\.\\mailslot\\APIHOOK\\Monitor\\Log", 0, 0, NULL);
 	if (INVALID_HANDLE_VALUE == hMailslotLog)
 	{
@@ -32,8 +51,9 @@ DWORD WINAPI LogThreadProc(LPVOID lpParameter)
 		return 0;
 	}
 
+	//it is time to create the new process DllInject.exe
 	ReleaseSemaphore(hSemaphoreInject, 1, NULL);
-	//WaitForSingleObject(hSemaphoreStatus, INFINITE);
+
 	//read from slot and write to file
 	while (!isStopped || 1 < dwMessageRemain)
 	{
@@ -48,8 +68,7 @@ DWORD WINAPI LogThreadProc(LPVOID lpParameter)
 			ReadFile(hMailslotLog, szReadBuf, dwMessageSize, NULL, NULL);
 			szReadBuf[dwMessageSize/sizeof(WCHAR)] = L'\0';
 			OutputDebugString(szReadBuf);
-			//OutputDebugString(L"\n");
-			printf("messagesize: %u\n", dwMessageSize);
+
 			//use new file or not
 			if (dwFileSize > MAX_FILE_SIZE)
 			{
@@ -57,7 +76,7 @@ DWORD WINAPI LogThreadProc(LPVOID lpParameter)
 				{
 					CloseHandle(hLogFile);
 				}
-				RefreshFileName(szCurrentLogPath);
+				RefreshFileName(szCurrentLogPath,szCurrentDirectory);
 				hLogFile = CreateFile(szCurrentLogPath, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 				if (INVALID_HANDLE_VALUE == hLogFile)
 				{
@@ -88,13 +107,13 @@ DWORD WINAPI LogThreadProc(LPVOID lpParameter)
 }
 
 
-void RefreshFileName(PWCHAR szCurrentLogPath)
+VOID RefreshFileName(PWCHAR szCurrentLogPath, LPCWCHAR szCurrentDirectory)
 {
 	SYSTEMTIME st;
 	GetLocalTime(&st);
 	WCHAR szBuf[MAX_PATH];
 	swprintf_s(szBuf,
-		L"C:\\Users\\michael\\Documents\\Logs\\ALIHOOK_Monitor_Log_%hu_%hu_%hu_%hu_%hu_%hu_%hu.txt", 
+		L"Logs\\ALIHOOK_Monitor_Log_%hu_%hu_%hu_%hu_%hu_%hu_%hu.txt", 
 		st.wYear, 
 		st.wMonth,
 		st.wDay,
@@ -103,5 +122,29 @@ void RefreshFileName(PWCHAR szCurrentLogPath)
 		st.wSecond,
 		st.wMilliseconds
 	);
-	StringCbCopy(szCurrentLogPath, MAX_PATH, szBuf);
+	StringCbCopy(szCurrentLogPath, MAX_PATH, szCurrentDirectory);
+	StringCbCat(szCurrentLogPath, MAX_PATH, szBuf);
+}
+
+
+VOID GetModuleDirectory(PWCHAR szCurrentDirectory)
+{
+	DWORD dwCurDirPathLen;
+	dwCurDirPathLen = GetModuleFileName(NULL, szCurrentDirectory, MAX_PATH);
+	if (!dwCurDirPathLen)
+	{
+		OutputDebugString(L"GetModuleFileName ERROR\n");
+		return;
+	}
+	SIZE_T i = 0;
+	StringCbLengthW(szCurrentDirectory, MAX_PATH, &i);
+	if (0 == i)
+	{
+		OutputDebugString(L"GetModuleFileName ERROR\n");
+		return;
+	}
+	for (; i > 0 && L'\\' != szCurrentDirectory[i - 1]; i--) {}
+	szCurrentDirectory[i] = L'\0';
+	OutputDebugString(szCurrentDirectory);
+	OutputDebugString(L"\n");
 }

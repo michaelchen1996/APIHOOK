@@ -6,4 +6,5 @@
 extern HANDLE hSemaphoreInject;
 
 DWORD WINAPI LogThreadProc(LPVOID lpParameter);
-void RefreshFileName(PWCHAR szCurrentLogPath);
+VOID RefreshFileName(PWCHAR szCurrentLogPath, LPCWCHAR szCurrentDirectory);
+VOID GetModuleDirectory(PWCHAR szCurrentDirectory);
