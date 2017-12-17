@@ -89,7 +89,8 @@ void StartMonitor()
 		return;
 	}
 	OutputDebugString(L"CreateProcess DllInject.exe\n");
-
+	WaitForSingleObject(pi.hProcess, INFINITE);
+	OutputDebugString(L"DllInject.exe Finished\n");
 
 	WaitForSingleObject(hThreadLog, INFINITE);
 	ReleaseMutex(hMutexSingleton);
@@ -117,10 +118,14 @@ void StopMonitor()
 		return;
 	}
 	OutputDebugString(L"CreateProcess DllUnInject.exe\n");
+	WaitForSingleObject(pi.hProcess, INFINITE);
+	OutputDebugString(L"DllUnInject.exe Finished\n");
 
 }
 
 void RestartMonitor()
 {
 	OutputDebugString(L"Do restart \n");
+	StopMonitor();
+	StartMonitor();
 }
