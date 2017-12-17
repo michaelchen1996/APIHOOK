@@ -15,7 +15,6 @@ DWORD WINAPI LogThreadProc(LPVOID lpParameter)
 	BOOL isStopped = FALSE;
 	WCHAR szReadBuf[MAX_LOG_SIZE];
 	WCHAR szCurrentLogPath[MAX_PATH];
-	WCHAR szCurrentDirectory[MAX_PATH];
 
 	//Get Monitor.exe directory, in order to read config file
 	GetModuleDirectory(szCurrentDirectory);
@@ -76,7 +75,7 @@ DWORD WINAPI LogThreadProc(LPVOID lpParameter)
 				{
 					CloseHandle(hLogFile);
 				}
-				RefreshFileName(szCurrentLogPath,szCurrentDirectory);
+				RefreshFileName(szCurrentLogPath);
 				hLogFile = CreateFile(szCurrentLogPath, GENERIC_WRITE, 0, NULL, CREATE_NEW, FILE_ATTRIBUTE_NORMAL, NULL);
 				if (INVALID_HANDLE_VALUE == hLogFile)
 				{
@@ -107,7 +106,7 @@ DWORD WINAPI LogThreadProc(LPVOID lpParameter)
 }
 
 
-VOID RefreshFileName(PWCHAR szCurrentLogPath, LPCWCHAR szCurrentDirectory)
+VOID RefreshFileName(PWCHAR szCurrentLogPath)
 {
 	SYSTEMTIME st;
 	GetLocalTime(&st);

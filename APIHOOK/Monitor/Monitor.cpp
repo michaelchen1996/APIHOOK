@@ -3,9 +3,6 @@
 
 #include "stdafx.h"
 #include "Monitor.h"
-#include "LogThread.h"
-
-HANDLE hSemaphoreInject = NULL;
 
 int wmain(int argc, wchar_t *argv[], wchar_t *envp[])
 {
@@ -47,6 +44,7 @@ void StartMonitor()
 
 	HANDLE hMutexSingleton = NULL;
 	HANDLE hThreadLog = NULL;
+	WCHAR szDllInjectPath[MAX_PATH];
 
 	hMutexSingleton = CreateMutex(NULL, TRUE, L"APIHOOK_Monitor_Mutex_Singleton");
 	if (ERROR_ALREADY_EXISTS == GetLastError())
@@ -79,7 +77,19 @@ void StartMonitor()
 	WaitForSingleObject(hSemaphoreInject, INFINITE);
 
 	//create DllInject.exe process
-	//OutputDebugString(L"Create DllInject.exe process\n");
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+	ZeroMemory(&si, sizeof(si));
+	ZeroMemory(&pi, sizeof(pi));
+	StringCbCopy(szDllInjectPath, MAX_PATH, szCurrentDirectory);
+	StringCbCat(szDllInjectPath, MAX_PATH, L"DllInject.exe");
+	if (!CreateProcess(szDllInjectPath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+	{
+		OutputDebugString(L"CreateProcess DllInject.exe ERROR\n");
+		return;
+	}
+	OutputDebugString(L"CreateProcess DllInject.exe\n");
+
 
 	WaitForSingleObject(hThreadLog, INFINITE);
 	ReleaseMutex(hMutexSingleton);
@@ -92,6 +102,22 @@ void StartMonitor()
 void StopMonitor()
 {
 	OutputDebugString(L"Do stop \n");
+
+	WCHAR szDllUnInjectPath[MAX_PATH];
+	STARTUPINFO si;
+	PROCESS_INFORMATION pi;
+
+	ZeroMemory(&si, sizeof(si));
+	ZeroMemory(&pi, sizeof(pi));
+	StringCbCopy(szDllUnInjectPath, MAX_PATH, szCurrentDirectory);
+	StringCbCat(szDllUnInjectPath, MAX_PATH, L"DllUnInject.exe");
+	if (!CreateProcess(szDllUnInjectPath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi))
+	{
+		OutputDebugString(L"CreateProcess DllUnInject.exe ERROR\n");
+		return;
+	}
+	OutputDebugString(L"CreateProcess DllUnInject.exe\n");
+
 }
 
 void RestartMonitor()
