@@ -7,7 +7,8 @@
 
 int main()
 {
-	
+	WCHAR szCurrentDirectory[MAX_PATH];
+
 	//SetPrivilege
 	if (!SetPrivilege(SE_DEBUG_NAME, TRUE))
 	{
@@ -15,10 +16,80 @@ int main()
 		return 0;
 	}
 
-	DoSearchProcess(NULL);
-	//DoReleaseSemaphoreStatus();
+	GetModuleDirectory(szCurrentDirectory);
+
+	ReadTargetListAndDo(szCurrentDirectory);
+	
+	DoReleaseSemaphoreStatus();
 
     return 0;
+}
+
+
+void GetModuleDirectory(PWCHAR szCurrentDirectory)
+{
+	DWORD dwCurDirPathLen;
+	dwCurDirPathLen = GetModuleFileName(NULL, szCurrentDirectory, MAX_PATH);
+	if (!dwCurDirPathLen)
+	{
+		printf("GetModuleFileName ERROR\n");
+		return;
+	}
+	SIZE_T i = 0;
+	StringCbLengthW(szCurrentDirectory, MAX_PATH, &i);
+	if (0 == i)
+	{
+		return;
+	}
+	for (; i > 0 && L'\\' != szCurrentDirectory[i - 1]; i--) {}
+	szCurrentDirectory[i] = L'\0';
+	OutputDebugString(szCurrentDirectory);
+	OutputDebugString(L"\n");
+
+}
+
+void ReadTargetListAndDo(LPCWCHAR szCurrentDirectory) {
+	WCHAR szListDirectory[MAX_PATH];
+	WCHAR szProcName[MAX_PATH];
+	WCHAR szBuf[2];
+	DWORD dwNumRead;
+	HANDLE hFile = NULL;
+
+	StringCbCopy(szListDirectory, MAX_PATH, szCurrentDirectory);
+	StringCbCat(szListDirectory, MAX_PATH, L"TargetList.txt");
+	OutputDebugString(szListDirectory);
+	OutputDebugString(L"\n");
+	hFile = CreateFile(szListDirectory, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	if (INVALID_HANDLE_VALUE == hFile)
+	{
+		OutputDebugString(L"TargetList.txt NOT FOUND\n");
+		return;
+	}
+	StringCbCopy(szProcName, MAX_PATH, L"");
+	while (TRUE)
+	{
+		ReadFile(hFile, szBuf, 2, &dwNumRead, NULL);
+		szBuf[1] = L'\0';
+		if (0 == dwNumRead)
+		{
+			CloseHandle(hFile);
+			break;
+		}
+		if (L'\r' == *szBuf)
+		{
+			OutputDebugString(szProcName);
+			OutputDebugString(L" in TargetList\n");
+			DoSearchProcess(szProcName);
+			StringCbCopy(szProcName, MAX_PATH, L"");
+			continue;
+
+		}
+		if (L'\n' == *szBuf)
+		{
+			continue;
+		}
+		StringCbCat(szProcName, MAX_PATH, szBuf);
+	}
 }
 
 

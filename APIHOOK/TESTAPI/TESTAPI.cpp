@@ -3,6 +3,6 @@
 
 int main()
 {
-	for (;;);
+	Sleep(INFINITE);
 	return 0;
 }

@@ -9,6 +9,20 @@ int wmain(int argc, wchar_t *argv[], wchar_t *envp[])
 
 	if (2 != argc) {
 		ShowHelp();
+		int i;
+		scanf_s("%d", &i);
+		switch(i)
+		{
+		case 1:
+			StartMonitor();
+			break;
+		case 2:
+			StopMonitor();
+			break;
+		case 3:
+			RestartMonitor();
+			break;
+		}
 	}
 	else if (CSTR_EQUAL == CompareString(LOCALE_SYSTEM_DEFAULT, LINGUISTIC_IGNORECASE, argv[1], -1, L"start", -1))
 	{

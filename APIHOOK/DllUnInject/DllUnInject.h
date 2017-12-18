@@ -1,7 +1,7 @@
 #pragma once
 
-#define MAX_TARGET_NUM 10
-
+void GetModuleDirectory(PWCHAR szCurrentDirectory);
+void ReadTargetListAndDo(LPCWCHAR szCurrentDirectory);
 void DoSearchProcess(LPCWCHAR dwProcesName);
 void DoSearchModule(DWORD dwProcessId);
 void DoDllUnInject(DWORD dwProcessId, HMODULE hModule);
