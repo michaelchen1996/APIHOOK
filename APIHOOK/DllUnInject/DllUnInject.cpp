@@ -96,18 +96,20 @@ void DoSearchModule(DWORD dwProcessId)
 	CloseHandle(hModuleSnap);
 
 	//do DllUnInject
-	if (hEasyHook64 || hHookDll)
+	if (hHookDll)
 	{
-		DoDllUnInject(dwProcessId, hEasyHook64, hHookDll);
+		OutputDebugString(L"HookDll.dll UnInject START\n");
+		DoDllUnInject(dwProcessId, hHookDll);
 	}
-
+	if (hEasyHook64)
+	{
+		OutputDebugString(L"EasyHook64.dll UnInject START\n");
+		DoDllUnInject(dwProcessId, hEasyHook64);
+	}
 }
 
-void DoDllUnInject(DWORD dwProcessId, HMODULE hEasyHook64, HMODULE hHookDll)
+void DoDllUnInject(DWORD dwProcessId, HMODULE hModule)
 {
-	SIZE_T stBufSize = sizeof(HMODULE);
-	SIZE_T stWriteSize = 0;
-	LPVOID pRemoteBuf = NULL;
 	HMODULE hKernel32 = NULL;
 	PTHREAD_START_ROUTINE pThreadProc = NULL;
 	HANDLE hThread = NULL;
@@ -117,29 +119,15 @@ void DoDllUnInject(DWORD dwProcessId, HMODULE hEasyHook64, HMODULE hHookDll)
 	hKernel32 = GetModuleHandle(L"kernel32.dll");
 	pThreadProc = (PTHREAD_START_ROUTINE)GetProcAddress(hKernel32, "FreeLibrary");
 
-	//alloc in the target process
-	pRemoteBuf = VirtualAllocEx(hProcess, NULL, stBufSize, MEM_COMMIT, PAGE_READWRITE);
-	if (!pRemoteBuf)
+	//do UnInject
+	if (hModule)
 	{
-		OutputDebugString(L"VirtualAllocEx ERROR\n");
-		return;
-	}
-
-	//do UnInject to HookDll.dll
-	if (hHookDll)
-	{
-		OutputDebugString(L"HookDll.dll UnInject START\n");
-		WriteProcessMemory(hProcess, pRemoteBuf, (LPVOID)&hHookDll, stBufSize, &stWriteSize);
-		if (stBufSize != stWriteSize)
-		{
-			OutputDebugString(L"WriteProcessMemory ERROR\n");
-			return;
-		}
+		
 		hThread = CreateRemoteThread(hProcess,
 			NULL,
 			0,
 			(LPTHREAD_START_ROUTINE)pThreadProc,
-			pRemoteBuf,
+			hModule,
 			0,
 			NULL);
 		if (hThread)
@@ -152,36 +140,6 @@ void DoDllUnInject(DWORD dwProcessId, HMODULE hEasyHook64, HMODULE hHookDll)
 			OutputDebugString(L"CreateRemoteThread ERROR\n");
 		}
 	}
-
-	//do UnInject to EasyHook64.dll
-	if (hEasyHook64)
-	{
-		OutputDebugString(L"EasyHook64.dll UnInject START\n");
-		WriteProcessMemory(hProcess, pRemoteBuf, (LPVOID)&hEasyHook64, stBufSize, &stWriteSize);
-		if (stBufSize != stWriteSize)
-		{
-			OutputDebugString(L"WriteProcessMemory ERROR\n");
-			return;
-		}
-		hThread = CreateRemoteThread(hProcess,
-			NULL,
-			0,
-			(LPTHREAD_START_ROUTINE)pThreadProc,
-			pRemoteBuf,
-			0,
-			NULL);
-		if (hThread)
-		{
-			WaitForSingleObject(hThread, INFINITE);
-			CloseHandle(hThread);
-		}
-		else
-		{
-			OutputDebugString(L"CreateRemoteThread ERROR\n");
-		}
-	}
-
-	VirtualFreeEx(hProcess, pRemoteBuf, stBufSize, MEM_RELEASE);
 }
 
 void DoReleaseSemaphoreStatus()
