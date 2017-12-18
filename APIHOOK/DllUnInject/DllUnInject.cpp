@@ -15,7 +15,7 @@ int main()
 		return 0;
 	}
 
-	DoSearchProcess(L"TESTAPI.exe");
+	DoSearchProcess(NULL);
 	//DoReleaseSemaphoreStatus();
 
     return 0;
@@ -49,6 +49,8 @@ void DoSearchProcess(LPCWCHAR szProcessName)
 	{
 		if (!szProcessName || CSTR_EQUAL == CompareString(GetSystemDefaultLCID(), 0, szProcessName, -1, pe32.szExeFile, -1))
 		{
+			OutputDebugString(pe32.szExeFile);
+			OutputDebugString(L": looking for module\n");
 			DoSearchModule(pe32.th32ProcessID);
 		}
 
