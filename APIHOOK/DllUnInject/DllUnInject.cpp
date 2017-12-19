@@ -59,9 +59,10 @@ void ReadTargetListAndDo(LPCWCHAR szCurrentDirectory) {
 	StringCbCat(szListDirectory, MAX_PATH, L"TargetList.txt");
 	OutputDebugString(szListDirectory);
 	OutputDebugString(L"\n");
-	hFile = CreateFile(szListDirectory, GENERIC_READ, 0, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	hFile = CreateFile(szListDirectory, GENERIC_READ, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
+		printf_s("error: %d\n", GetLastError()); system("PAUSE");
 		OutputDebugString(L"TargetList.txt NOT FOUND\n");
 		return;
 	}
