@@ -1,11 +1,13 @@
 #pragma once
 
-#include "LogThread.h"
+#ifndef __MONITOR__
+#define __MONITOR__
+#include "Log.h"
+#endif // !__MONITOR__
 
-HANDLE hSemaphoreInject = NULL;
-WCHAR szCurrentDirectory[MAX_PATH];
 
 void ShowHelp();
 void StartMonitor();
 void StopMonitor();
 void RestartMonitor();
+void MyCreateProcess(LPCTSTR szProcessName);
