@@ -144,12 +144,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="easyhook.h" />
+    <ClInclude Include="FileAPI.h" />
+    <ClInclude Include="HookDll.h" />
+    <ClInclude Include="SendLog.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="FileAPI.cpp" />
     <ClCompile Include="HookDll.cpp" />
+    <ClCompile Include="SendLog.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

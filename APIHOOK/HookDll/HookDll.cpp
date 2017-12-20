@@ -2,5 +2,16 @@
 //
 
 #include "stdafx.h"
+#include "HookDll.h"
 
 
+void DoHook()
+{
+
+}
+
+
+void DoUnHook()
+{
+
+}
