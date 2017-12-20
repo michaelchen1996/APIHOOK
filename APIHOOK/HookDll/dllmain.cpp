@@ -12,25 +12,37 @@ BOOL APIENTRY DllMain( HMODULE hModule,
     {
     case DLL_PROCESS_ATTACH:
 	{
-		OutputDebugString(L"DllMain: DLL_PROCESS_ATTACH\n");
-		printf("%s", "DllMain: DLL_PROCESS_ATTACH\n");
+		OutputDebugString(L"HookDll DllMain: DLL_PROCESS_ATTACH\n");	
+
+		Prepare();
+		DoHook();
+		
+		break;
 	}
-    case DLL_THREAD_ATTACH:
+
+	case DLL_THREAD_ATTACH:
 	{
-		OutputDebugString(L"DllMain: DLL_THREAD_ATTACH\n");
-		printf("%s", "DllMain: DLL_THREAD_ATTACH\n");
+		OutputDebugString(L"HookDll DllMain: DLL_THREAD_ATTACH\n");
+		
+		break;
 	}
-    case DLL_THREAD_DETACH:
+    
+	case DLL_THREAD_DETACH:
 	{
-		OutputDebugString(L"DllMain: DLL_THREAD_DETACH\n");
-		printf("%s", "DllMain: DLL_THREAD_DETACH\n");
+		OutputDebugString(L"HookDll DllMain: DLL_THREAD_DETACH\n");
+	
+		break;
 	}
-    case DLL_PROCESS_DETACH:
+    
+	case DLL_PROCESS_DETACH:
 	{
-		OutputDebugString(L"DllMain: DLL_PROCESS_DETACH\n");
-		printf("%s", "DllMain: DLL_PROCESS_DETACH\n");
+		OutputDebugString(L"HookDll DllMain: DLL_PROCESS_DETACH\n");
+	
+		DoUnHook();
+		Finish();
+	
+		break;
 	}
-        break;
     }
     return TRUE;
 }
