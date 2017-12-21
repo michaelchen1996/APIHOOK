@@ -102,7 +102,14 @@ void DoSearchProcess(LPCWCHAR szProcessName)
 	//search for all the process
 	do
 	{
-		if (!szProcessName || CSTR_EQUAL == CompareString(GetSystemDefaultLCID(), 0, szProcessName, -1, pe32.szExeFile, -1))
+		if (!szProcessName || CSTR_EQUAL == CompareString(
+			GetSystemDefaultLCID(), 
+			0, 
+			szProcessName, 
+			-1, 
+			pe32.szExeFile, 
+			-1
+		))
 		{
 			OutputDebugString(pe32.szExeFile);
 			OutputDebugString(TEXT(": looking for module\n"));

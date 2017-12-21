@@ -41,7 +41,15 @@ void ReadTargetList(vector<LPTSTR> *szTargetList) {
 	StringCbCat(szListDirectory, MAX_PATH, TEXT("\\TargetList.txt"));
 	OutputDebugString(szListDirectory);
 	OutputDebugString(TEXT("\n"));
-	hFile = CreateFile(szListDirectory, GENERIC_READ, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	hFile = CreateFile(
+		szListDirectory, 
+		GENERIC_READ, 
+		FILE_SHARE_WRITE, 
+		NULL, 
+		OPEN_EXISTING, 
+		FILE_ATTRIBUTE_NORMAL, 
+		NULL
+	);
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
 		printf_s("error: %d\n", GetLastError()); system("PAUSE");

@@ -147,7 +147,14 @@ BOOL isInjected(DWORD dwProcessId)
 	//search for all the module
 	do
 	{
-		if (CSTR_EQUAL == CompareString(GetSystemDefaultLCID(), 0, me32.szModule, -1, TEXT("HookDll.dll"), -1))
+		if (CSTR_EQUAL == CompareString(
+			GetSystemDefaultLCID(), 
+			0, 
+			me32.szModule, 
+			-1, 
+			TEXT("HookDll.dll"), 
+			-1
+		))
 		{
 			hHookDll = me32.hModule;
 			break;
