@@ -1,7 +1,6 @@
 #pragma once
 
-void GetModuleDirectory(PWCHAR szCurrentDirectory);
-void ReadTargetListAndDo(LPCWCHAR szCurrentDirectory);
+void ReadTargetListAndDo();
 void DoSearchProcess(LPCWCHAR dwProcesName);
 void DoSearchModule(DWORD dwProcessId);
 void DoDllUnInject(DWORD dwProcessId, HMODULE hModule);

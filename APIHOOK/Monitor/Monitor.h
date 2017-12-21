@@ -10,4 +10,4 @@ void ShowHelp();
 void StartMonitor();
 void StopMonitor();
 void RestartMonitor();
-void MyCreateProcess(LPCTSTR szProcessName);
+HANDLE MyCreateProcess(LPCTSTR szProcessName);

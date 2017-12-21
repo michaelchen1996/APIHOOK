@@ -36,7 +36,7 @@ void Log()
 	}
 	
 	//create status semaphore
-	hSemaphoreStatus = CreateSemaphore(NULL, 0, 1, TEXT("APIHOOK_Monitor_Semaphore_Status"));
+	hSemaphoreStatus = CreateSemaphore(NULL, 0, 2, TEXT("APIHOOK_Monitor_Semaphore_Status"));
 	if (!hSemaphoreStatus)
 	{
 		OutputDebugString(TEXT("CreateSemaphore ERROR\n"));

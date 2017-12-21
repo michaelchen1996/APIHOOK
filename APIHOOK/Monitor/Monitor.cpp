@@ -119,7 +119,9 @@ void StartMonitor()
 void StopMonitor()
 {
 	OutputDebugString(TEXT("Do stop \n"));
-	MyCreateProcess(TEXT("DllUnInject.exe"));
+	HANDLE hProcess = NULL;
+	hProcess = MyCreateProcess(TEXT("DllUnInject.exe"));
+	WaitForSingleObject(hProcess, INFINITE);
 
 }
 
@@ -132,7 +134,7 @@ void RestartMonitor()
 }
 
 
-void MyCreateProcess(LPCTSTR szProcessName)
+HANDLE MyCreateProcess(LPCTSTR szProcessName)
 {
 	TCHAR szProcessPath[MAX_PATH];
 	STARTUPINFO si;
@@ -151,9 +153,10 @@ void MyCreateProcess(LPCTSTR szProcessName)
 		OutputDebugString(TEXT("CreateProcess "));
 		OutputDebugString(szProcessName);
 		OutputDebugString(TEXT(" ERROR\n"));
-		return;
+		return NULL;
 	}
-	WaitForSingleObject(pi.hProcess, INFINITE);
+	/*WaitForSingleObject(pi.hProcess, INFINITE);
 	OutputDebugString(szProcessName);
-	OutputDebugString(TEXT(" Finished\n"));
+	OutputDebugString(TEXT(" Finished\n"));*/
+	return pi.hProcess;
 }

@@ -7,85 +7,68 @@
 
 int main()
 {
-	WCHAR szCurrentDirectory[MAX_PATH];
 
 	//SetPrivilege
 	if (!SetPrivilege(SE_DEBUG_NAME, TRUE))
 	{
-		OutputDebugString(L"SetPrivilege ERROR\n");
+		OutputDebugString(TEXT("SetPrivilege ERROR\n"));
 		return 0;
 	}
 
-	GetModuleDirectory(szCurrentDirectory);
-
-	ReadTargetListAndDo(szCurrentDirectory);
-	
 	DoReleaseSemaphoreStatus();
+
+	ReadTargetListAndDo();
 
     return 0;
 }
 
 
-void GetModuleDirectory(PWCHAR szCurrentDirectory)
-{
-	DWORD dwCurDirPathLen;
-	dwCurDirPathLen = GetModuleFileName(NULL, szCurrentDirectory, MAX_PATH);
-	if (!dwCurDirPathLen)
-	{
-		printf("GetModuleFileName ERROR\n");
-		return;
-	}
-	SIZE_T i = 0;
-	StringCbLengthW(szCurrentDirectory, MAX_PATH, &i);
-	if (0 == i)
-	{
-		return;
-	}
-	for (; i > 0 && L'\\' != szCurrentDirectory[i - 1]; i--) {}
-	szCurrentDirectory[i] = L'\0';
-	OutputDebugString(szCurrentDirectory);
-	OutputDebugString(L"\n");
-
-}
-
-void ReadTargetListAndDo(LPCWCHAR szCurrentDirectory) {
-	WCHAR szListDirectory[MAX_PATH];
-	WCHAR szProcName[MAX_PATH];
-	WCHAR szBuf[2];
+void ReadTargetListAndDo() {
+	TCHAR szListDirectory[MAX_PATH];
+	TCHAR szProcName[MAX_PATH];
+	TCHAR szBuf[2];
 	DWORD dwNumRead;
 	HANDLE hFile = NULL;
 
-	StringCbCopy(szListDirectory, MAX_PATH, szCurrentDirectory);
-	StringCbCat(szListDirectory, MAX_PATH, L"TargetList.txt");
+	GetCurrentDirectory(MAX_PATH, szListDirectory);
+	StringCbCat(szListDirectory, MAX_PATH, TEXT("\\TargetList.txt"));
 	OutputDebugString(szListDirectory);
-	OutputDebugString(L"\n");
-	hFile = CreateFile(szListDirectory, GENERIC_READ, FILE_SHARE_WRITE, NULL, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, NULL);
+	OutputDebugString(TEXT("\n"));
+	hFile = CreateFile(
+		szListDirectory, 
+		GENERIC_READ, 
+		FILE_SHARE_WRITE, 
+		NULL, 
+		OPEN_EXISTING, 
+		FILE_ATTRIBUTE_NORMAL, 
+		NULL
+	);
 	if (INVALID_HANDLE_VALUE == hFile)
 	{
 		printf_s("error: %d\n", GetLastError()); system("PAUSE");
-		OutputDebugString(L"TargetList.txt NOT FOUND\n");
+		OutputDebugString(TEXT("TargetList.txt NOT FOUND\n"));
 		return;
 	}
-	StringCbCopy(szProcName, MAX_PATH, L"");
+	szProcName[0] = TEXT('\0');
 	while (TRUE)
 	{
 		ReadFile(hFile, szBuf, 2, &dwNumRead, NULL);
-		szBuf[1] = L'\0';
+		szBuf[1] = TEXT('\0');
 		if (0 == dwNumRead)
 		{
 			CloseHandle(hFile);
 			break;
 		}
-		if (L'\r' == *szBuf)
+		if (TEXT('\r') == *szBuf)
 		{
 			OutputDebugString(szProcName);
-			OutputDebugString(L" in TargetList\n");
+			OutputDebugString(TEXT(" in TargetList\n"));
 			DoSearchProcess(szProcName);
-			StringCbCopy(szProcName, MAX_PATH, L"");
+			szProcName[0] = TEXT('\0');
 			continue;
 
 		}
-		if (L'\n' == *szBuf)
+		if (TEXT('\n') == *szBuf)
 		{
 			continue;
 		}
@@ -104,7 +87,7 @@ void DoSearchProcess(LPCWCHAR szProcessName)
 	hProcessSnap = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
 	if (hProcessSnap == INVALID_HANDLE_VALUE)
 	{
-		OutputDebugString(L"CreateToolhelp32Snapshot ERROR");
+		OutputDebugString(TEXT("CreateToolhelp32Snapshot ERROR"));
 		return;
 	}
 
@@ -112,7 +95,7 @@ void DoSearchProcess(LPCWCHAR szProcessName)
 	pe32.dwSize = sizeof(PROCESSENTRY32);
 	if (!Process32First(hProcessSnap, &pe32))
 	{
-		OutputDebugString(L"Process32First ERROR");
+		OutputDebugString(TEXT("Process32First ERROR"));
 		CloseHandle(hProcessSnap);
 		return;
 	}
@@ -122,7 +105,7 @@ void DoSearchProcess(LPCWCHAR szProcessName)
 		if (!szProcessName || CSTR_EQUAL == CompareString(GetSystemDefaultLCID(), 0, szProcessName, -1, pe32.szExeFile, -1))
 		{
 			OutputDebugString(pe32.szExeFile);
-			OutputDebugString(L": looking for module\n");
+			OutputDebugString(TEXT(": looking for module\n"));
 			DoSearchModule(pe32.th32ProcessID);
 		}
 
@@ -143,7 +126,7 @@ void DoSearchModule(DWORD dwProcessId)
 	hModuleSnap = CreateToolhelp32Snapshot(TH32CS_SNAPMODULE, dwProcessId);
 	if (hModuleSnap == INVALID_HANDLE_VALUE)
 	{
-		OutputDebugString(L"CreateToolhelp32Snapshot for MODULE ERROR\n");
+		OutputDebugString(TEXT("CreateToolhelp32Snapshot for MODULE ERROR\n"));
 		return;
 	}
 
@@ -151,18 +134,32 @@ void DoSearchModule(DWORD dwProcessId)
 	me32.dwSize = sizeof(MODULEENTRY32);
 	if (!Module32First(hModuleSnap, &me32))
 	{
-		OutputDebugString(L"Module32First ERROR\n");
+		OutputDebugString(TEXT("Module32First ERROR\n"));
 		CloseHandle(hModuleSnap);
 		return;
 	}
 	//search for all the module
 	do
 	{
-		if (CSTR_EQUAL == CompareString(GetSystemDefaultLCID(), 0, me32.szModule, -1, L"EasyHook64.dll", -1))
+		if (CSTR_EQUAL == CompareString(
+			GetSystemDefaultLCID(), 
+			0, 
+			me32.szModule, 
+			-1, 
+			TEXT("EasyHook64.dll"), 
+			-1
+		))
 		{
 			hEasyHook64 = me32.hModule;
 		}
-		else if (CSTR_EQUAL == CompareString(GetSystemDefaultLCID(), 0, me32.szModule, -1, L"HookDll.dll", -1))
+		else if (CSTR_EQUAL == CompareString(
+			GetSystemDefaultLCID(), 
+			0, 
+			me32.szModule, 
+			-1, 
+			TEXT("HookDll.dll"), 
+			-1
+		))
 		{
 			hHookDll = me32.hModule;
 		}
@@ -172,12 +169,12 @@ void DoSearchModule(DWORD dwProcessId)
 	//do DllUnInject
 	if (hHookDll)
 	{
-		OutputDebugString(L"HookDll.dll UnInject START\n");
+		OutputDebugString(TEXT("HookDll.dll UnInject START\n"));
 		DoDllUnInject(dwProcessId, hHookDll);
 	}
 	if (hEasyHook64)
 	{
-		OutputDebugString(L"EasyHook64.dll UnInject START\n");
+		OutputDebugString(TEXT("EasyHook64.dll UnInject START\n"));
 		DoDllUnInject(dwProcessId, hEasyHook64);
 	}
 }
@@ -190,7 +187,7 @@ void DoDllUnInject(DWORD dwProcessId, HMODULE hModule)
 	HANDLE hProcess = NULL;
 
 	hProcess = OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwProcessId);
-	hKernel32 = GetModuleHandle(L"kernel32.dll");
+	hKernel32 = GetModuleHandle(TEXT("kernel32.dll"));
 	pThreadProc = (PTHREAD_START_ROUTINE)GetProcAddress(hKernel32, "FreeLibrary");
 
 	//do UnInject
@@ -211,7 +208,7 @@ void DoDllUnInject(DWORD dwProcessId, HMODULE hModule)
 		}
 		else
 		{
-			OutputDebugString(L"CreateRemoteThread ERROR\n");
+			OutputDebugString(TEXT("CreateRemoteThread ERROR\n"));
 		}
 	}
 }
@@ -219,16 +216,29 @@ void DoDllUnInject(DWORD dwProcessId, HMODULE hModule)
 void DoReleaseSemaphoreStatus()
 {
 	HANDLE hSemaphoreStatus;
+	HANDLE hSemaphoreAck;
 
-	hSemaphoreStatus = CreateSemaphore(NULL, 0, 1, L"APIHOOK_Monitor_Semaphore_Status");
+	hSemaphoreStatus = CreateSemaphore(NULL, 0, 2, TEXT("APIHOOK_Monitor_Semaphore_Status"));
 	if (!hSemaphoreStatus)
 	{
-		printf("CreateSemaphore ERROR\n");
+		OutputDebugString(TEXT("CreateSemaphore ERROR\n"));
 		return;
 	}
-	ReleaseSemaphore(hSemaphoreStatus, 1, NULL);
+
+	hSemaphoreAck = CreateSemaphore(NULL, 0, 1, TEXT("APIHOOK_Monitor_Semaphore_Ack"));
+	if (!hSemaphoreStatus)
+	{
+		OutputDebugString(TEXT("CreateSemaphore ERROR\n"));
+		return;
+	}
+
+	ReleaseSemaphore(hSemaphoreStatus, 2, NULL);
+	WaitForSingleObject(hSemaphoreAck, INFINITE);
+
 	CloseHandle(hSemaphoreStatus);
 	hSemaphoreStatus = NULL;
+	CloseHandle(hSemaphoreAck);
+	hSemaphoreAck = NULL;
 }
 
 
@@ -242,7 +252,7 @@ BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
 		TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY,
 		&hToken))
 	{
-		OutputDebugString(L"OpenProcessToken ERROR\n");
+		OutputDebugString(TEXT("OpenProcessToken ERROR\n"));
 		return FALSE;
 	}
 
@@ -250,7 +260,7 @@ BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
 		lpszPrivilege,    // privilege to lookup   
 		&luid))          // receives LUID of privilege  
 	{
-		OutputDebugString(L"LookupPrivilegeValue ERROR\n");
+		OutputDebugString(TEXT("LookupPrivilegeValue ERROR\n"));
 		return FALSE;
 	}
 
@@ -269,13 +279,13 @@ BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege)
 		(PTOKEN_PRIVILEGES)NULL,
 		(PDWORD)NULL))
 	{
-		OutputDebugString(L"AdjustTokenPrivileges ERROR\n");
+		OutputDebugString(TEXT("AdjustTokenPrivileges ERROR\n"));
 		return FALSE;
 	}
 
 	if (GetLastError() == ERROR_NOT_ALL_ASSIGNED)
 	{
-		OutputDebugString(L"GetLastError ERROR\n");
+		OutputDebugString(TEXT("GetLastError ERROR\n"));
 		return FALSE;
 	}
 

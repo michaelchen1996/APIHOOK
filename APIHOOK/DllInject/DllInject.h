@@ -1,7 +1,13 @@
 #pragma once
 
-VOID GetModuleDirectory(PWCHAR szCurrentDirectory);
-DWORD ReadTargetList(LPCWCHAR szCurrentDirectory, LPDWORD dwPIdList);
-VOID DoInject(HANDLE hProcess, WCHAR *dllName);
-DWORD GetProcessID(WCHAR *pName);
+#include "CreateRemoteThreadInject.h"
+
+#ifndef __DLL_INJECT__
+#define __DLL_INJECT__
+
+
+void ReadTargetList(vector<LPTSTR> *szTargetList);
 BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege);
+
+
+#endif // !__DLL_INJECT__
