@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CreateRemoteThreadInject.h"
+#include "CreateProcessInject.h"
 
 #ifndef __DLL_INJECT__
 #define __DLL_INJECT__

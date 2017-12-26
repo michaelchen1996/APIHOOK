@@ -143,12 +143,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CreateProcessInject.h" />
     <ClInclude Include="CreateRemoteThreadInject.h" />
     <ClInclude Include="DllInject.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="CreateProcessInject.cpp" />
     <ClCompile Include="CreateRemoteThreadInject.cpp" />
     <ClCompile Include="DllInject.cpp" />
     <ClCompile Include="stdafx.cpp">

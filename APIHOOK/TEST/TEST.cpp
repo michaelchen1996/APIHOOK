@@ -4,35 +4,9 @@
 #include "stdafx.h"
 #include "windows.h"
 #include "strsafe.h"
-//#include <Psapi.h>
-//#include <DbgHelp.h>
-#include <Imagehlp.h>
+#include <tlhelp32.h>
 
 BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege);
-LPBYTE  GetExeEntryPoint(PCSTR filename);
-
-
-#pragma pack (push ,1) // 保证下面的结构体采用BYTE对齐（必须）  
-typedef struct INJECT_CODE
-{
-	BYTE      int_PUSHAD;         // pushad        0x60         
-	BYTE      int_PUSH;             // push &szDLL     0x68  
-	DWORD push_Value;           //            &szDLL = "ApiSpy.dll"的path  
-	BYTE      int_MOVEAX;              //  move eax &LoadLibrary  0xB8  
-	DWORD eax_Value;             //     &LoadLibrary  
-	WORD    call_eax;         //     call eax    0xD0FF(FF D0) (LoadLibrary("ApiSpy.dll");
-	BYTE      jmp_MOVEAX;             //     move eax &ReplaceOldCode  0xB8         
-	DWORD jmp_Value;             //     JMP的参数  
-	WORD    jmp_eax;        //     jmp eax   0xE0FF(FF E0) jmp ReplaceOldCode;  
-	char szDLL[MAX_PATH]; //  "ApiSpy.dll"的FullPath  
-}INJECT_LOADLIBRARY_CODE, *LPINJECT_CODE;
-#pragma pack (pop , 1)  
-
-typedef struct
-{
-	LPBYTE  lpEntryPoint;   // 目标进程的入口地址  
-	BYTE      oldcode[sizeof(INJECT_CODE)];        // 目标进程的代码保存  
-}SPY_MEM_SHARE, *LPSPY_MEM_SHARE;
 
 
 int main()
@@ -90,32 +64,50 @@ int main()
 		Sleep(100);
 	}
 	*/
-	
+
+
 	if (!SetPrivilege(SE_DEBUG_NAME, TRUE))
 	{
 		OutputDebugString(TEXT("SetPrivilege ERROR\n"));
 		return 0;
 	}
 
+	LoadLibraryA("C;\\HookDll.dll");
 
-	LPBYTE pEntryPoint = GetExeEntryPoint("C:\\Users\\michael\\Documents\\GitHub\\APIHOOK\\APIHOOK\\x64\\Debug\\TESTAPI.exe");
-	printf("EP: 0x%x\n", pEntryPoint);
 
-	HANDLE hMap = CreateFileMapping((HANDLE)0xFFFFFFFF, NULL, PAGE_READWRITE, 0, sizeof(SPY_MEM_SHARE), TEXT("MyDllMapView"));
-	LPSPY_MEM_SHARE lpMap = (LPSPY_MEM_SHARE)MapViewOfFile(hMap, FILE_MAP_ALL_ACCESS, 0, 0, 0);
-
-	
-	DWORD dwProcessId;
 	HANDLE hProcess;
-	LPTSTR szTargetPath = TEXT("C:\\Users\\michael\\Documents\\GitHub\\APIHOOK\\APIHOOK\\x64\\Debug\\TESTAPI.exe");
+	HANDLE hThread;
 	STARTUPINFO si;
 	PROCESS_INFORMATION pi;
+
+	BYTE ShellCode64[64] =
+	{
+		0x48,0x83,0xEC,0x28,  // sub rsp ,28h
+
+		0x48,0x8D,0x0d,       // [+4] lea rcx,
+		0xaa,0xbb,0xcc,0xdd,  // [+7] dll path offset =  TargetAddress- Current(0x48)[+4] -7 
+
+		0xff,0x15,            // [+11]
+		0xdd,0xcc,0xbb,0xaa,  // [+13] call LoadLibrary offset = TargetAddress - Current(0xe8)[+11] -5
+
+		0x48,0x83,0xc4,0x28,  // [+17] add rsp,28
+
+		0xff,0x25,            // [+21]
+		0xaa,0xbb,0xcc,0xdd,  // [+23] jmp rip offset  = TargetAddress - Current(0xff)[+20] - 6
+
+		0xaa,0xbb,0xcc,0xdd,  //+27
+		0xaa,0xbb,0xcc,0xdd,
+
+		0xaa,0xbb,0xcc,0xdd,  //+35
+		0xaa,0xbb,0xcc,0xdd
+		//+43
+	};
 
 	ZeroMemory(&si, sizeof(si));
 	ZeroMemory(&pi, sizeof(pi));
 
 	if (!CreateProcess(
-		szTargetPath,
+		TEXT("C:\\Users\\michael\\Documents\\GitHub\\APIHOOK\\APIHOOK\\x64\\Debug\\TESTAPI.exe"),
 		NULL,
 		NULL,
 		NULL,
@@ -131,50 +123,54 @@ int main()
 	}
 
 	hProcess = pi.hProcess;
-	dwProcessId = pi.dwProcessId;
-	printf("PID:%u\n", dwProcessId);
+	hThread = pi.hThread;
 
-	char szCurrentDir[MAX_PATH];
-	GetCurrentDirectoryA(MAX_PATH, szCurrentDir);
-	SIZE_T stRead;
-	ReadProcessMemory(pi.hProcess, pEntryPoint, &lpMap->oldcode, sizeof(INJECT_CODE), &stRead);
-	lpMap->lpEntryPoint = pEntryPoint;
-	INJECT_CODE     newCode;
-	strcpy_s(newCode.szDLL, szCurrentDir);
-	strcat_s(newCode.szDLL, "\\dll.dll");
-	// 准备硬代码（汇编代码）  
-	newCode.int_PUSHAD = 0x60;
-	newCode.int_PUSH = 0x68;
-	newCode.int_MOVEAX = 0xB8;
-	newCode.call_eax = 0xD0FF;
-	newCode.jmp_MOVEAX = 0xB8;
-	newCode.jmp_eax = 0xE0FF;
-	newCode.eax_Value = (DWORD)&LoadLibraryA;
-	newCode.push_Value = (DWORD)(pEntryPoint + offsetof(INJECT_CODE, szDLL));
-	DWORD dwNewFlg, dwOldFlg;
-	dwNewFlg = PAGE_READWRITE;
-	VirtualProtectEx(pi.hProcess, (LPVOID)pEntryPoint, sizeof(DWORD), dwNewFlg, &dwOldFlg);
-	WriteProcessMemory(pi.hProcess, pEntryPoint, &newCode, sizeof(newCode), NULL);//&dwWrited);  
-	VirtualProtectEx(pi.hProcess, (LPVOID)pEntryPoint, sizeof(DWORD), dwOldFlg, &dwNewFlg);
-	UnmapViewOfFile(lpMap);
+	//////////////////////////////////////////////////////
+	CONTEXT ctx;
+	if (!GetThreadContext(hThread, &ctx))
+	{
+		printf("GetThreadContext Error\n");
+		return FALSE;
+	}
+	ctx.ContextFlags = CONTEXT_ALL;
+	LPVOID LpAddr = VirtualAllocEx(hProcess, NULL, 64, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
+	if (LpAddr == NULL)
+	{
+		printf("VirtualAlloc Error\n");
+		return FALSE;
+	}
+	DWORD64 LoadDllAAddr = (DWORD64)GetProcAddress(GetModuleHandle(L"kernel32.dll"), "LoadLibraryA");
+	if (LoadDllAAddr == NULL)
+	{
+		printf("LoadDllAddr error\n");
+		return FALSE;
+	}
+	//////////////////////////////////////////////////////
+	BYTE *DllPath;
+	DllPath = ShellCode64 + 43;
+	StringCbCopyA((char*)DllPath, MAX_PATH, "C:\\HookDll.dll");
+	DWORD DllNameOffset = 32;
+	*(DWORD*)(ShellCode64 + 7) = (DWORD)DllNameOffset;
+	//DWORD LoadDllAddroffset = (BYTE*)LoadDllAAddr - ((BYTE*)LpAddr + 11) - 5;
+	*(DWORD64*)(ShellCode64 + 35) = LoadDllAAddr;
+	*(DWORD*)(ShellCode64 + 13) = 18;
+	*(DWORD64*)(ShellCode64 + 27) = ctx.Rip;
+	*(DWORD*)(ShellCode64 + 23) = (DWORD)0;
+	if (!WriteProcessMemory(hProcess, LpAddr, ShellCode64, 64, NULL))
+	{
+		printf("write Process Error\n");
+		return FALSE;
+	}
+	ctx.Rip = (DWORD64)LpAddr;
+	if (!SetThreadContext(hThread, &ctx))
+	{
+		printf("set thread context error\n");
+		return FALSE;
+	}
+	ResumeThread(hThread);
 
 	system("PAUSE");
     return 0;
-}
-
-
-LPBYTE  GetExeEntryPoint(PCSTR filename)
-{
-	PIMAGE_NT_HEADERS pNTHeader;
-	DWORD pEntryPoint;
-	PLOADED_IMAGE pImage;
-	pImage = ImageLoad(filename, NULL);
-	if (pImage == NULL)
-		return NULL;
-	pNTHeader = pImage->FileHeader;
-	pEntryPoint = pNTHeader->OptionalHeader.AddressOfEntryPoint + pNTHeader->OptionalHeader.ImageBase;
-	ImageUnload(pImage);
-	return (LPBYTE)pEntryPoint;
 }
 
 
