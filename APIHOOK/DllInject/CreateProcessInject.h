@@ -19,6 +19,7 @@
 #define SHELLCODE_RIP_OFFSET 0
 
 BOOL CreateProcessAndDoInject(LPCWSTR szProcessName);
+LPBYTE  GetExeEntryPoint(PCSTR filename);
 
 
 #endif // !__CREATE_PROCESS_INJECT__

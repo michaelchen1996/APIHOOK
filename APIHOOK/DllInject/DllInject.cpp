@@ -20,12 +20,12 @@ int main()
 	ReadTargetList(&szTargetList);
 
 	//CreateRemoteThread Inject
-	//DoSingleInject(&szTargetList);
-	DoContinualInject(&szTargetList);
+	DoSingleInject(&szTargetList);
+	//DoContinualInject(&szTargetList);
 
 	//CreateProcess Inject
-
-
+	//printf("GetExeEntryPoint: %x\n", GetExeEntryPoint("C:\\Users\\michael\\Documents\\GitHub\\APIHOOK\\APIHOOK\\x64\\Debug\\DllInject.exe"));
+	//CreateProcessAndDoInject(TEXT("C:\\Users\\michael\\Documents\\GitHub\\APIHOOK\\APIHOOK\\x64\\Debug\\TESTAPI.exe"));
 	return 0;
 }
 

@@ -3,6 +3,7 @@
 
 BOOL CreateProcessAndDoInject(LPCWSTR szProcessName)
 {
+	OutputDebugString(TEXT("CreateProcessAndDoInject Start\n"));
 	HANDLE hSemaphoreStatus;
 	HANDLE hSemaphoreAck;
 
@@ -44,14 +45,14 @@ BOOL CreateProcessAndDoInject(LPCWSTR szProcessName)
 	if (!hSemaphoreStatus)
 	{
 		OutputDebugString(TEXT("CreateSemaphore ERROR\n"));
-		return;
+		return TRUE;
 	}
 
 	hSemaphoreAck = CreateSemaphore(NULL, 0, 1, TEXT("APIHOOK_Monitor_Semaphore_Ack"));
 	if (!hSemaphoreStatus)
 	{
 		OutputDebugString(TEXT("CreateSemaphore ERROR\n"));
-		return;
+		return TRUE;
 	}
 
 	ZeroMemory(&si, sizeof(si));
@@ -62,7 +63,7 @@ BOOL CreateProcessAndDoInject(LPCWSTR szProcessName)
 		NULL,
 		NULL,
 		FALSE,
-		CREATE_SUSPENDED,
+		CREATE_SUSPENDED | DEBUG_ONLY_THIS_PROCESS | CREATE_NEW_CONSOLE,
 		NULL,
 		NULL,
 		&si,
@@ -76,6 +77,7 @@ BOOL CreateProcessAndDoInject(LPCWSTR szProcessName)
 	hProcess = pi.hProcess;
 	hThread = pi.hThread;
 	
+	ctx.ContextFlags = CONTEXT_ALL;
 	if (!GetThreadContext(hThread, &ctx))
 	{
 		OutputDebugString(TEXT("GetThreadContext Error\n"));
@@ -114,7 +116,7 @@ BOOL CreateProcessAndDoInject(LPCWSTR szProcessName)
 
 	*(DWORD64*)(ShellCode64 + SHELLCODE_LOAD_LIBRARY_ENTRY) = LoadLibraryEntry;
 	*(DWORD*)(ShellCode64 + SHELLCODE_DLL_PATH_ADDR) = (DWORD)SHELLCODE_LOAD_LIBRARY_ENTRY_OFFSET;
-	
+	printf("RIP: 0x%llx\n", ctx.Rip);
 	*(DWORD64*)(ShellCode64 + SHELLCODE_RIP) = ctx.Rip;
 	*(DWORD*)(ShellCode64 + SHELLCODE_RIP_ADDR) = (DWORD)SHELLCODE_RIP_OFFSET;
 	
@@ -124,7 +126,7 @@ BOOL CreateProcessAndDoInject(LPCWSTR szProcessName)
 		return FALSE;
 	}
 
-	ctx.ContextFlags = CONTEXT_ALL;
+	//ctx.ContextFlags = CONTEXT_ALL;
 	ctx.Rip = (DWORD64)LpRemoteAddr;
 
 	if (!SetThreadContext(hThread, &ctx))
@@ -132,11 +134,11 @@ BOOL CreateProcessAndDoInject(LPCWSTR szProcessName)
 		OutputDebugString(TEXT("set thread context error\n"));
 		return FALSE;
 	}
-
+	printf("ResumeThread...\n");
 	ResumeThread(hThread);
 
 	WaitForSingleObject(hSemaphoreStatus, INFINITE);
-
+	printf("TerminateProcess...\n");
 	TerminateProcess(hProcess, 0);
 	
 	ReleaseSemaphore(hSemaphoreAck, 1, NULL);
@@ -146,4 +148,19 @@ BOOL CreateProcessAndDoInject(LPCWSTR szProcessName)
 	CloseHandle(hSemaphoreAck);
 	hSemaphoreAck = NULL;
 
+	return TRUE;
+}
+
+LPBYTE  GetExeEntryPoint(PCSTR filename)
+{
+	PIMAGE_NT_HEADERS64 pNTHeader;
+	DWORD pEntryPoint;
+	PLOADED_IMAGE pImage;
+	pImage = ImageLoad(filename, NULL);
+	if (pImage == NULL)
+		return NULL;
+	pNTHeader = pImage->FileHeader;
+	pEntryPoint = pNTHeader->OptionalHeader.AddressOfEntryPoint + pNTHeader->OptionalHeader.ImageBase;
+	ImageUnload(pImage);
+	return (LPBYTE)pEntryPoint;
 }

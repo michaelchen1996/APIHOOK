@@ -3,6 +3,8 @@
 
 int main()
 {
-	Sleep(INFINITE);
+	printf("This is TESTAI\n");
+	for (;;);
+	//system("PAUSE");
 	return 0;
 }

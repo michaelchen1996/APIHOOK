@@ -13,6 +13,7 @@
 #include <tlhelp32.h>
 #include <strsafe.h>
 #include <vector>
+#include <Imagehlp.h>
 
 using namespace std;
 
