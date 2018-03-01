@@ -84,19 +84,19 @@ void Prepare()
 
 	//FileAPI Prepare
 	realZwSetInformationFile = (ptrZwSetInformationFile)GetRealApiEntry(L"ntdll.dll", "ZwSetInformationFile");
-	realSetFileTime = (ptrSetFileTime)GetRealApiEntry(L"hGdi32", "SetFileTime");
-	realSetFileValidData = (ptrSetFileValidData)GetRealApiEntry(L"hKernel32", "SetFileValidData");
-	realSetEndOfFile = (ptrSetEndOfFile)GetRealApiEntry(L"hKernel32", "SetEndOfFile");
-	realCreateHardLinkW = (ptrCreateHardLinkW)GetRealApiEntry(L"hKernel32", "CreateHardLinkW");
-	realSetFileAttributesW = (ptrSetFileAttributesW)GetRealApiEntry(L"hKernel32", "SetFileAttributesW");
-	realFindNextFileW = (ptrFindNextFileW)GetRealApiEntry(L"hKernel32", "FindNextFileW");
-	realFindFirstFileW = (ptrFindFirstFileW)GetRealApiEntry(L"hKernel32", "FindFirstFileW");
-	realDeleteFileW = (ptrDeleteFileW)GetRealApiEntry(L"hKernel32", "DeleteFileW");
-	realCopyFileW = (ptrCopyFileW)GetRealApiEntry(L"hKernel32", "CopyFileW");
-	realMoveFileW = (ptrMoveFileW)GetRealApiEntry(L"hKernel32", "MoveFileW");
-	realCreateFileW = (ptrCreateFileW)GetRealApiEntry(L"hKernel32", "CreateFileW");
-	realCreateFileA = (ptrCreateFileA)GetRealApiEntry(L"hKernel32", "CreateFileA");
-	realReadFile = (ptrReadFile)GetRealApiEntry(L"hKernel32", "ReadFile");
+	realSetFileTime = (ptrSetFileTime)GetRealApiEntry(L"Gdi32", "SetFileTime");
+	realSetFileValidData = (ptrSetFileValidData)GetRealApiEntry(L"Kernel32", "SetFileValidData");
+	realSetEndOfFile = (ptrSetEndOfFile)GetRealApiEntry(L"Kernel32", "SetEndOfFile");
+	realCreateHardLinkW = (ptrCreateHardLinkW)GetRealApiEntry(L"Kernel32", "CreateHardLinkW");
+	realSetFileAttributesW = (ptrSetFileAttributesW)GetRealApiEntry(L"Kernel32", "SetFileAttributesW");
+	realFindNextFileW = (ptrFindNextFileW)GetRealApiEntry(L"Kernel32", "FindNextFileW");
+	realFindFirstFileW = (ptrFindFirstFileW)GetRealApiEntry(L"Kernel32", "FindFirstFileW");
+	realDeleteFileW = (ptrDeleteFileW)GetRealApiEntry(L"Kernel32", "DeleteFileW");
+	realCopyFileW = (ptrCopyFileW)GetRealApiEntry(L"Kernel32", "CopyFileW");
+	realMoveFileW = (ptrMoveFileW)GetRealApiEntry(L"Kernel32", "MoveFileW");
+	realCreateFileW = (ptrCreateFileW)GetRealApiEntry(L"Kernel32", "CreateFileW");
+	realCreateFileA = (ptrCreateFileA)GetRealApiEntry(L"Kernel32", "CreateFileA");
+	realReadFile = (ptrReadFile)GetRealApiEntry(L"Kernel32", "ReadFile");
 	//FileAPI Prepare finished
 
 
@@ -121,6 +121,7 @@ void DoHook()
 {
 	NTSTATUS status = 0;
 	//FileAPI DoHook
+	/*
 	status = LhInstallHook(
 		realZwSetInformationFile,
 		MyZwSetInformationFile,
@@ -138,7 +139,7 @@ void DoHook()
 	{
 		OutputDebugString(L"LhSetExclusiveACL ERROR\n");
 	}
-
+	*/
 	LhInstallHook(realSetFileTime, MySetFileTime, NULL, hHookSetFileTime);
 	LhSetExclusiveACL(HookSetFileTime_ACLEntries, 1, hHookSetFileTime);
 	
@@ -271,17 +272,18 @@ FARPROC GetRealApiEntry(LPCWSTR lpModuleName, LPCSTR lpProcName)
 {
 	HMODULE hModule = NULL;
 	FARPROC realProc = NULL;
-	OutputDebugString(L"PrepareRealApiEntry()\n");
 
 	hModule = GetModuleHandleW(lpModuleName);
 	if (NULL == hModule)
 	{
-		OutputDebugString(L"GetModuleHandleW ERROR\n");
+		OutputDebugStringW(lpModuleName);
+		OutputDebugString(L": GetModuleHandleW ERROR\n");
 	}
 	realProc = GetProcAddress(hModule, lpProcName);
 	if (NULL == realProc)
 	{
-		OutputDebugString(L"GetProcAddress ERROR\n");
+		OutputDebugStringA(lpProcName);
+		OutputDebugString(L": GetProcAddress ERROR\n");
 	}
 	return realProc;
 	//CloseHandle(hModule);

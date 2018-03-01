@@ -56,6 +56,10 @@ BOOL WINAPI MyReadFile(
 	{
 		GetFinalPathNameByHandle(hFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
 	}
+	else
+	{
+		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
+	}
 	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("ReadFile"));
 	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("|"));
 	StringCbCat(szLogBuf, MAX_LOG_SIZE, szFilepath);
@@ -78,6 +82,10 @@ BOOL WINAPI MySetFileTime(
 	{
 		GetFinalPathNameByHandle(hFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
 	}
+	else
+	{
+		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
+	}
 	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("SetFileTime"));
 	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("|"));
 	StringCbCat(szLogBuf, MAX_LOG_SIZE, szFilepath);
@@ -98,6 +106,10 @@ BOOL WINAPI MySetFileValidData(
 	{
 		GetFinalPathNameByHandle(hFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
 	}
+	else
+	{
+		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
+	}
 	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("SetFileValidData"));
 	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("|"));
 	StringCbCat(szLogBuf, MAX_LOG_SIZE, szFilepath);
@@ -116,6 +128,10 @@ BOOL WINAPI MySetEndOfFile(
 	if (hFile != NULL)
 	{
 		GetFinalPathNameByHandle(hFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
+	}
+	else
+	{
+		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
 	}
 	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("SetEndOfFile"));
 	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("|"));
@@ -165,14 +181,18 @@ BOOL WINAPI MyFindNextFileW(
 ) 
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
-	TCHAR hFilepath[MAX_PATH];
+	TCHAR szFilepath[MAX_PATH];
 	if (hFindFile != NULL)
 	{
-		GetFinalPathNameByHandle(hFindFile, hFilepath, MAX_PATH, VOLUME_NAME_DOS);
+		GetFinalPathNameByHandle(hFindFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
+	}
+	else
+	{
+		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
 	}
 	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("FindNextFileW"));
 	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("|"));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, hFilepath);
+	StringCbCat(szLogBuf, MAX_LOG_SIZE, szFilepath);
 	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\r\n"));
 	SendLog(szLogBuf);
 	return (realFindNextFileW)(hFindFile, lpFindFileData);
