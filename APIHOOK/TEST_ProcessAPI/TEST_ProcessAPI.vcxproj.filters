@@ -21,45 +21,13 @@
     <ClInclude Include="targetver.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="easyhook.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="HookDll.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="FileAPI.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="SendLog.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="ProcessAPI.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="HookDll.cpp">
+    <ClCompile Include="TEST_ProcessAPI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="FileAPI.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="SendLog.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="ProcessAPI.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <Library Include="EasyHook64.lib">
-      <Filter>资源文件</Filter>
-    </Library>
   </ItemGroup>
 </Project>

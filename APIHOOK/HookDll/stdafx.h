@@ -15,7 +15,7 @@
 #include <stdio.h>
 #include <strsafe.h>
 #include <Psapi.h>
-
+#include <TlHelp32.h>
 
 #include "easyhook.h"  
 

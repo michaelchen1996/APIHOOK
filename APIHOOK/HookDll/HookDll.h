@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FileAPI.h"
+#include "ProcessAPI.h"
 
 #ifndef __HOOK_DLL__
 #define __HOOK_DLL__
