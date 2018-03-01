@@ -14,9 +14,10 @@
 #include <windows.h>
 #include <stdio.h>
 #include <strsafe.h>
+#include <Psapi.h>
+
 
 #include "easyhook.h"  
-
 
 
 // TODO: 在此处引用程序需要的其他头文件
