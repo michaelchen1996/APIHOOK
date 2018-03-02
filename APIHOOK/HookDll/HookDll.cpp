@@ -278,6 +278,53 @@ ptrTerminateProcess realTerminateProcess = NULL;
 
 
 //RegAPI INIT 
+TRACED_HOOK_HANDLE      hHookRegOpenKeyExW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegOpenKeyW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegCreateKeyExW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegCreateKeyW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegQueryValueExW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegQueryValueW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegSetValueExW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegSetValueW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegDeleteKeyExW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegDeleteKeyW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegSetKeySecurity = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegRestoreKeyW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegReplaceKeyW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegLoadKeyW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookRegUnLoadKey = new HOOK_TRACE_INFO();
+
+ULONG                   HookRegOpenKeyExW_ACLEntries[1] = { 0 };
+ULONG                   HookRegOpenKeyW_ACLEntries[1] = { 0 };
+ULONG                   HookRegCreateKeyExW_ACLEntries[1] = { 0 };
+ULONG                   HookRegCreateKeyW_ACLEntries[1] = { 0 };
+ULONG                   HookRegQueryValueExW_ACLEntries[1] = { 0 };
+ULONG                   HookRegQueryValueW_ACLEntries[1] = { 0 };
+ULONG                   HookRegSetValueExW_ACLEntries[1] = { 0 };
+ULONG                   HookRegSetValueW_ACLEntries[1] = { 0 };
+ULONG                   HookRegDeleteKeyExW_ACLEntries[1] = { 0 };
+ULONG                   HookRegDeleteKeyW_ACLEntries[1] = { 0 };
+ULONG                   HookRegSetKeySecurity_ACLEntries[1] = { 0 };
+ULONG                   HookRegRestoreKeyW_ACLEntries[1] = { 0 };
+ULONG                   HookRegReplaceKeyW_ACLEntries[1] = { 0 };
+ULONG                   HookRegLoadKeyW_ACLEntries[1] = { 0 };
+ULONG                   HookRegUnLoadKey_ACLEntries[1] = { 0 };
+
+ptrRegOpenKeyExW realRegOpenKeyExW = NULL;
+ptrRegOpenKeyW realRegOpenKeyW = NULL;
+ptrRegCreateKeyExW realRegCreateKeyExW = NULL;
+ptrRegCreateKeyW realRegCreateKeyW = NULL;
+ptrRegQueryValueExW realRegQueryValueExW = NULL;
+ptrRegQueryValueW realRegQueryValueW = NULL;
+ptrRegSetValueExW realRegSetValueExW = NULL;
+ptrRegSetValueW realRegSetValueW = NULL;
+ptrRegDeleteKeyExW realRegDeleteKeyExW = NULL;
+ptrRegDeleteKeyW realRegDeleteKeyW = NULL;
+ptrRegSetKeySecurity realRegSetKeySecurity = NULL;
+ptrRegRestoreKeyW realRegRestoreKeyW = NULL;
+ptrRegReplaceKeyW realRegReplaceKeyW = NULL;
+ptrRegLoadKeyW realRegLoadKeyW = NULL;
+ptrRegUnLoadKey realRegUnLoadKey = NULL;
 //RegAPI INIT finished
 
 
@@ -395,6 +442,21 @@ void Prepare()
 	//NetworkAPI Prepare finished
 
 	//RegAPI Prepare
+	realRegOpenKeyExW = (ptrRegOpenKeyExW)GetRealApiEntry(L"Advapi32", "RegOpenKeyExW");
+	realRegOpenKeyW = (ptrRegOpenKeyW)GetRealApiEntry(L"Advapi32", "RegOpenKeyW");
+	realRegCreateKeyExW = (ptrRegCreateKeyExW)GetRealApiEntry(L"Advapi32", "RegCreateKeyExW");
+	realRegCreateKeyW = (ptrRegCreateKeyW)GetRealApiEntry(L"Advapi32", "RegCreateKeyW");
+	realRegQueryValueExW = (ptrRegQueryValueExW)GetRealApiEntry(L"Advapi32", "RegQueryValueExW");
+	realRegQueryValueW = (ptrRegQueryValueW)GetRealApiEntry(L"Advapi32", "RegQueryValueW");
+	realRegSetValueExW = (ptrRegSetValueExW)GetRealApiEntry(L"Advapi32", "RegSetValueExW");
+	realRegSetValueW = (ptrRegSetValueW)GetRealApiEntry(L"Advapi32", "RegSetValueW");
+	realRegDeleteKeyExW = (ptrRegDeleteKeyExW)GetRealApiEntry(L"Advapi32", "RegDeleteKeyExW");
+	realRegDeleteKeyW = (ptrRegDeleteKeyW)GetRealApiEntry(L"Advapi32", "RegDeleteKeyW");
+	realRegSetKeySecurity = (ptrRegSetKeySecurity)GetRealApiEntry(L"Advapi32", "RegSetKeySecurity");
+	realRegRestoreKeyW = (ptrRegRestoreKeyW)GetRealApiEntry(L"Advapi32", "RegRestoreKeyW");
+	realRegReplaceKeyW = (ptrRegReplaceKeyW)GetRealApiEntry(L"Advapi32", "RegReplaceKeyW");
+	realRegLoadKeyW = (ptrRegLoadKeyW)GetRealApiEntry(L"Advapi32", "RegLoadKeyW");
+	realRegUnLoadKey = (ptrRegUnLoadKey)GetRealApiEntry(L"Advapi32", "RegUnLoadKeyW");
 	//RegAPI Prepare finished
 
 	//OtherAPI Prepare
@@ -832,6 +894,81 @@ void DoHook()
 	//NetworkAPI DoHook finished
 
 	//RegAPI DoHook
+	if (realRegOpenKeyExW != NULL)
+	{
+		LhInstallHook(realRegOpenKeyExW, MyRegOpenKeyExW, NULL, hHookRegOpenKeyExW);
+		LhSetExclusiveACL(HookRegOpenKeyExW_ACLEntries, 1, hHookRegOpenKeyExW);
+	}
+	if (realRegOpenKeyW != NULL)
+	{
+		LhInstallHook(realRegOpenKeyW, MyRegOpenKeyW, NULL, hHookRegOpenKeyW);
+		LhSetExclusiveACL(HookRegOpenKeyW_ACLEntries, 1, hHookRegOpenKeyW);
+	}
+	if (realRegCreateKeyExW != NULL)
+	{
+		LhInstallHook(realRegCreateKeyExW, MyRegCreateKeyExW, NULL, hHookRegCreateKeyExW);
+		LhSetExclusiveACL(HookRegCreateKeyExW_ACLEntries, 1, hHookRegCreateKeyExW);
+	}
+	if (realRegCreateKeyW != NULL)
+	{
+		LhInstallHook(realRegCreateKeyW, MyRegCreateKeyW, NULL, hHookRegCreateKeyW);
+		LhSetExclusiveACL(HookRegCreateKeyW_ACLEntries, 1, hHookRegCreateKeyW);
+	}
+	if (realRegQueryValueExW != NULL)
+	{
+		LhInstallHook(realRegQueryValueExW, MyRegQueryValueExW, NULL, hHookRegQueryValueExW);
+		LhSetExclusiveACL(HookRegQueryValueExW_ACLEntries, 1, hHookRegQueryValueExW);
+	}
+	if (realRegQueryValueW != NULL)
+	{
+		LhInstallHook(realRegQueryValueW, MyRegQueryValueW, NULL, hHookRegQueryValueW);
+		LhSetExclusiveACL(HookRegQueryValueW_ACLEntries, 1, hHookRegQueryValueW);
+	}
+	if (realRegSetValueExW != NULL)
+	{
+		LhInstallHook(realRegSetValueExW, MyRegSetValueExW, NULL, hHookRegSetValueExW);
+		LhSetExclusiveACL(HookRegSetValueExW_ACLEntries, 1, hHookRegSetValueExW);
+	}
+	if (realRegSetValueW != NULL)
+	{
+		LhInstallHook(realRegSetValueW, MyRegSetValueW, NULL, hHookRegSetValueW);
+		LhSetExclusiveACL(HookRegSetValueW_ACLEntries, 1, hHookRegSetValueW);
+	}
+	if (realRegDeleteKeyExW != NULL)
+	{
+		LhInstallHook(realRegDeleteKeyExW, MyRegDeleteKeyExW, NULL, hHookRegDeleteKeyExW);
+		LhSetExclusiveACL(HookRegDeleteKeyExW_ACLEntries, 1, hHookRegDeleteKeyExW);
+	}
+	if (realRegDeleteKeyW != NULL)
+	{
+		LhInstallHook(realRegDeleteKeyW, MyRegDeleteKeyW, NULL, hHookRegDeleteKeyW);
+		LhSetExclusiveACL(HookRegDeleteKeyW_ACLEntries, 1, hHookRegDeleteKeyW);
+	}
+	if (realRegSetKeySecurity != NULL)
+	{
+		LhInstallHook(realRegSetKeySecurity, MyRegSetKeySecurity, NULL, hHookRegSetKeySecurity);
+		LhSetExclusiveACL(HookRegSetKeySecurity_ACLEntries, 1, hHookRegSetKeySecurity);
+	}
+	if (realRegRestoreKeyW != NULL)
+	{
+		LhInstallHook(realRegRestoreKeyW, MyRegRestoreKeyW, NULL, hHookRegRestoreKeyW);
+		LhSetExclusiveACL(HookRegRestoreKeyW_ACLEntries, 1, hHookRegRestoreKeyW);
+	}
+	if (realRegReplaceKeyW != NULL)
+	{
+		LhInstallHook(realRegReplaceKeyW, MyRegReplaceKeyW, NULL, hHookRegReplaceKeyW);
+		LhSetExclusiveACL(HookRegReplaceKeyW_ACLEntries, 1, hHookRegReplaceKeyW);
+	}
+	if (realRegLoadKeyW != NULL)
+	{
+		LhInstallHook(realRegLoadKeyW, MyRegLoadKeyW, NULL, hHookRegLoadKeyW);
+		LhSetExclusiveACL(HookRegLoadKeyW_ACLEntries, 1, hHookRegLoadKeyW);
+	}
+	if (realRegUnLoadKey != NULL)
+	{
+		LhInstallHook(realRegUnLoadKey, MyRegUnLoadKey, NULL, hHookRegUnLoadKey);
+		LhSetExclusiveACL(HookRegUnLoadKey_ACLEntries, 1, hHookRegUnLoadKey);
+	}
 	//RegAPI DoHook finished
 
 	//OtherAPI DoHook
@@ -1037,6 +1174,37 @@ void DoUnHook()
 	//NetworkAPI DoUnHook finished
 
 	//RegAPI DoUnHook
+	delete      hHookRegOpenKeyExW;
+	delete      hHookRegOpenKeyW;
+	delete      hHookRegCreateKeyExW;
+	delete      hHookRegCreateKeyW;
+	delete      hHookRegQueryValueExW;
+	delete      hHookRegQueryValueW;
+	delete      hHookRegSetValueExW;
+	delete      hHookRegSetValueW;
+	delete      hHookRegDeleteKeyExW;
+	delete      hHookRegDeleteKeyW;
+	delete      hHookRegSetKeySecurity;
+	delete      hHookRegRestoreKeyW;
+	delete      hHookRegReplaceKeyW;
+	delete      hHookRegLoadKeyW;
+	delete      hHookRegUnLoadKey;
+
+	hHookRegOpenKeyExW = NULL;
+	hHookRegOpenKeyW = NULL;
+	hHookRegCreateKeyExW = NULL;
+	hHookRegCreateKeyW = NULL;
+	hHookRegQueryValueExW = NULL;
+	hHookRegQueryValueW = NULL;
+	hHookRegSetValueExW = NULL;
+	hHookRegSetValueW = NULL;
+	hHookRegDeleteKeyExW = NULL;
+	hHookRegDeleteKeyW = NULL;
+	hHookRegSetKeySecurity = NULL;
+	hHookRegRestoreKeyW = NULL;
+	hHookRegReplaceKeyW = NULL;
+	hHookRegLoadKeyW = NULL;
+	hHookRegUnLoadKey = NULL;
 	//RegAPI DoUnHook finished
 
 	//OtherAPI DoUnHook
