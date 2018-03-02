@@ -662,7 +662,7 @@ BOOL WINAPI	MyGetVersionExW(
 )
 {
 
-	return (GetVersionExW)(lpVersionInfo);
+	return (realGetVersionExW)(lpVersionInfo);
 }
 
 HMODULE WINAPI MyLoadLibraryW(
