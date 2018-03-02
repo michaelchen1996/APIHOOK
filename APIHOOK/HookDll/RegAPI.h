@@ -223,4 +223,4 @@ extern	  ptrRegLoadKeyW realRegLoadKeyW;
 extern	  ptrRegUnLoadKey realRegUnLoadKey;
 
 
-#endif // !__FILE_API__
+#endif // !__REG_API__
