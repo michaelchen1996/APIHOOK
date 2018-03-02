@@ -146,6 +146,7 @@
     <ClInclude Include="easyhook.h" />
     <ClInclude Include="FileAPI.h" />
     <ClInclude Include="HookDll.h" />
+    <ClInclude Include="NetAPI.h" />
     <ClInclude Include="ProcessAPI.h" />
     <ClInclude Include="RegAPI.h" />
     <ClInclude Include="SendLog.h" />
@@ -156,6 +157,7 @@
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="FileAPI.cpp" />
     <ClCompile Include="HookDll.cpp" />
+    <ClCompile Include="NetAPI.cpp" />
     <ClCompile Include="ProcessAPI.cpp" />
     <ClCompile Include="RegAPI.cpp" />
     <ClCompile Include="SendLog.cpp" />

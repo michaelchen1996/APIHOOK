@@ -104,7 +104,6 @@ LONG WINAPI MyRegSetValueExW(
 			a |= ((e << 24) & 0xff000000);
 			//a=e<<24 + d<<16 + c<<8 + b;
 			char p[256];
-			sprintf(p, "%d", a);
 		}
 		if (dwType == REG_DWORD_BIG_ENDIAN)
 		{
@@ -120,7 +119,6 @@ LONG WINAPI MyRegSetValueExW(
 			a |= ((b << 24) & 0xff000000);
 			//a=e<<24 + d<<16 + c<<8 + b;
 			char p[256];
-			sprintf(p, "%d", a);
 		}
 	}
 	return (realRegSetValueExW)(hKey, lpValueName, Reserved, dwType, lpData, cbData);

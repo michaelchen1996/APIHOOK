@@ -16,6 +16,10 @@
 #include <strsafe.h>
 #include <Psapi.h>
 #include <TlHelp32.h>
+#include <winsock2.h>
+#include <Wininet.h>
+#include <UrlMon.h>
+#include <Lmshare.h>
 
 #include "easyhook.h"  
 

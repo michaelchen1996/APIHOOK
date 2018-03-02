@@ -39,6 +39,9 @@
     <ClInclude Include="RegAPI.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="NetAPI.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -60,6 +63,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="RegAPI.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="NetAPI.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -273,10 +273,6 @@ ptrTerminateProcess realTerminateProcess = NULL;
 //ProcessAPI INIT finished
 
 
-//NetworkAPI INIT
-//NetworkAPI INIT finished
-
-
 //RegAPI INIT 
 TRACED_HOOK_HANDLE      hHookRegOpenKeyExW = new HOOK_TRACE_INFO();
 TRACED_HOOK_HANDLE      hHookRegOpenKeyW = new HOOK_TRACE_INFO();
@@ -326,6 +322,81 @@ ptrRegReplaceKeyW realRegReplaceKeyW = NULL;
 ptrRegLoadKeyW realRegLoadKeyW = NULL;
 ptrRegUnLoadKey realRegUnLoadKey = NULL;
 //RegAPI INIT finished
+
+
+//NetworkAPI INIT
+TRACED_HOOK_HANDLE      hHookaccept = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHooksend = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookbind = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookconnect = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookConnectNamedPipe = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookgethostname = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookinet_addr = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookInternetReadFile = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookInternetWriteFile = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookNetShareEnum = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookrecv = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookWSAStartup = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookInternetOpenW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookInternetOpenUrlW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookURLDownloadToFileW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookFtpPutFileW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookHttpSendRequestW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookHttpSendRequestExW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookHttpOpenRequestW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookInternetConnectW = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHooklisten = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookInternetOpenUrlA = new HOOK_TRACE_INFO();
+TRACED_HOOK_HANDLE      hHookHttpOpenRequestA = new HOOK_TRACE_INFO();
+
+ULONG                   Hookaccept_ACLEntries[1] = { 0 };
+ULONG                   Hooksend_ACLEntries[1] = { 0 };
+ULONG                   Hookbind_ACLEntries[1] = { 0 };
+ULONG                   Hookconnect_ACLEntries[1] = { 0 };
+ULONG                   HookConnectNamedPipe_ACLEntries[1] = { 0 };
+ULONG                   Hookgethostname_ACLEntries[1] = { 0 };
+ULONG                   Hookinet_addr_ACLEntries[1] = { 0 };
+ULONG                   HookInternetReadFile_ACLEntries[1] = { 0 };
+ULONG                   HookInternetWriteFile_ACLEntries[1] = { 0 };
+ULONG                   HookNetShareEnum_ACLEntries[1] = { 0 };
+ULONG                   Hookrecv_ACLEntries[1] = { 0 };
+ULONG                   HookWSAStartup_ACLEntries[1] = { 0 };
+ULONG                   HookInternetOpenW_ACLEntries[1] = { 0 };
+ULONG                   HookInternetOpenUrlW_ACLEntries[1] = { 0 };
+ULONG                   HookURLDownloadToFileW_ACLEntries[1] = { 0 };
+ULONG                   HookFtpPutFileW_ACLEntries[1] = { 0 };
+ULONG                   HookHttpSendRequestW_ACLEntries[1] = { 0 };
+ULONG                   HookHttpSendRequestExW_ACLEntries[1] = { 0 };
+ULONG                   HookHttpOpenRequestW_ACLEntries[1] = { 0 };
+ULONG                   HookInternetConnectW_ACLEntries[1] = { 0 };
+ULONG                   Hooklisten_ACLEntries[1] = { 0 };
+ULONG					HookInternetOpenUrlA_ACLEntries[1] = { 0 };
+ULONG					HookHttpOpenRequestA_ACLEntries[1] = { 0 };
+
+ptraccept realaccept = NULL;
+ptrsend realsend = NULL;
+ptrbind realbind = NULL;
+ptrconnect realconnect = NULL;
+ptrConnectNamedPipe realConnectNamedPipe = NULL;
+ptrgethostname realgethostname = NULL;
+ptrinet_addr realinet_addr = NULL;
+ptrInternetReadFile realInternetReadFile = NULL;
+ptrInternetWriteFile realInternetWriteFile = NULL;
+ptrNetShareEnum realNetShareEnum = NULL;
+ptrrecv realrecv = NULL;
+ptrWSAStartup realWSAStartup = NULL;
+ptrInternetOpenW realInternetOpenW = NULL;
+ptrInternetOpenUrlW realInternetOpenUrlW = NULL;
+ptrURLDownloadToFileW realURLDownloadToFileW = NULL;
+ptrFtpPutFileW realFtpPutFileW = NULL;
+ptrHttpSendRequestW realHttpSendRequestW = NULL;
+ptrHttpSendRequestExW realHttpSendRequestExW = NULL;
+ptrHttpOpenRequestW realHttpOpenRequestW = NULL;
+ptrInternetConnectW realInternetConnectW = NULL;
+ptrlisten reallisten = NULL;
+ptrInternetOpenUrlA realInternetOpenUrlA = NULL;
+ptrHttpOpenRequestA realHttpOpenRequestA = NULL;
+//NetworkAPI INIT finished
 
 
 //OtherAPI INIT
@@ -438,9 +509,6 @@ void Prepare()
 	realTerminateProcess = (ptrTerminateProcess)GetRealApiEntry(L"Kernel32", "TerminateProcess");
 	//ProcessAPI Prepare finished
 
-	//NetworkAPI Prepare
-	//NetworkAPI Prepare finished
-
 	//RegAPI Prepare
 	realRegOpenKeyExW = (ptrRegOpenKeyExW)GetRealApiEntry(L"Advapi32", "RegOpenKeyExW");
 	realRegOpenKeyW = (ptrRegOpenKeyW)GetRealApiEntry(L"Advapi32", "RegOpenKeyW");
@@ -459,8 +527,32 @@ void Prepare()
 	realRegUnLoadKey = (ptrRegUnLoadKey)GetRealApiEntry(L"Advapi32", "RegUnLoadKeyW");
 	//RegAPI Prepare finished
 
-	//OtherAPI Prepare
-	//OtherAPI Prepare finished
+	//NetworkAPI Prepare
+	realaccept = (ptraccept)GetRealApiEntry(L"Ws2_32", "accept");
+	realsend = (ptrsend)GetRealApiEntry(L"Ws2_32", "send");
+	realbind = (ptrbind)GetRealApiEntry(L"Ws2_32", "bind");
+	realconnect = (ptrconnect)GetRealApiEntry(L"Ws2_32", "connect");
+	realConnectNamedPipe = (ptrConnectNamedPipe)GetRealApiEntry(L"Kernel32", "ConnectNamedPipe");
+	realgethostname = (ptrgethostname)GetRealApiEntry(L"Ws2_32", "gethostname");
+	realinet_addr = (ptrinet_addr)GetRealApiEntry(L"Ws2_32", "inet_addr");
+	realInternetReadFile = (ptrInternetReadFile)GetRealApiEntry(L"Wininet", "InternetReadFile");
+	realInternetWriteFile = (ptrInternetWriteFile)GetRealApiEntry(L"Wininet", "InternetWriteFile");
+	realNetShareEnum = (ptrNetShareEnum)GetRealApiEntry(L"Netapi32", "NetShareEnum");
+	realrecv = (ptrrecv)GetRealApiEntry(L"Ws2_32", "recv");
+	realWSAStartup = (ptrWSAStartup)GetRealApiEntry(L"Ws2_32", "WSAStartup");
+	realInternetOpenW = (ptrInternetOpenW)GetRealApiEntry(L"Wininet", "InternetOpenW");
+	realInternetOpenUrlW = (ptrInternetOpenUrlW)GetRealApiEntry(L"Wininet", "InternetOpenUrlW");
+	realURLDownloadToFileW = (ptrURLDownloadToFileW)GetRealApiEntry(L"Urlmon", "URLDownloadToFileW");
+	realFtpPutFileW = (ptrFtpPutFileW)GetRealApiEntry(L"Wininet", "FtpPutFileW");
+	realHttpSendRequestW = (ptrHttpSendRequestW)GetRealApiEntry(L"Wininet", "HttpSendRequestW");
+	realHttpSendRequestExW = (ptrHttpSendRequestExW)GetRealApiEntry(L"Wininet", "HttpSendRequestExW");
+	realHttpOpenRequestW = (ptrHttpOpenRequestW)GetRealApiEntry(L"Wininet", "HttpOpenRequestW");
+	realInternetConnectW = (ptrInternetConnectW)GetRealApiEntry(L"Wininet", "InternetConnectW");
+	reallisten = (ptrlisten)GetRealApiEntry(L"Ws2_32", "listen");
+	realInternetOpenUrlA = (ptrInternetOpenUrlA)GetRealApiEntry(L"Wininet", "InternetOpenUrlA");
+	realHttpOpenRequestA = (ptrHttpOpenRequestA)GetRealApiEntry(L"Wininet", "HttpOpenRequestA");
+	//NetworkAPI Prepare finished
+
 }
 
 
@@ -890,9 +982,6 @@ void DoHook()
 	}
 	//ProcessAPI DoHook finished
 
-	//NetworkAPI DoHook
-	//NetworkAPI DoHook finished
-
 	//RegAPI DoHook
 	if (realRegOpenKeyExW != NULL)
 	{
@@ -971,8 +1060,123 @@ void DoHook()
 	}
 	//RegAPI DoHook finished
 
-	//OtherAPI DoHook
-	//OtherAPI DoHook finished
+	//NetworkAPI DoHook
+	if (realaccept != NULL)
+	{
+		LhInstallHook(realaccept, Myaccept, NULL, hHookaccept);
+		LhSetExclusiveACL(Hookaccept_ACLEntries, 1, hHookaccept);
+	}
+	if (realsend != NULL)
+	{
+		LhInstallHook(realsend, Mysend, NULL, hHooksend);
+		LhSetExclusiveACL(Hooksend_ACLEntries, 1, hHooksend);
+	}
+	if (realbind != NULL)
+	{
+		LhInstallHook(realbind, Mybind, NULL, hHookbind);
+		LhSetExclusiveACL(Hookbind_ACLEntries, 1, hHookbind);
+	}
+	if (realconnect != NULL)
+	{
+		LhInstallHook(realconnect, Myconnect, NULL, hHookconnect);
+		LhSetExclusiveACL(Hookconnect_ACLEntries, 1, hHookconnect);
+	}
+	if (realConnectNamedPipe != NULL)
+	{
+		LhInstallHook(realConnectNamedPipe, MyConnectNamedPipe, NULL, hHookConnectNamedPipe);
+		LhSetExclusiveACL(HookConnectNamedPipe_ACLEntries, 1, hHookConnectNamedPipe);
+	}
+	if (realgethostname != NULL)
+	{
+		LhInstallHook(realgethostname, Mygethostname, NULL, hHookgethostname);
+		LhSetExclusiveACL(Hookgethostname_ACLEntries, 1, hHookgethostname);
+	}
+	if (realinet_addr != NULL)
+	{
+		LhInstallHook(realinet_addr, Myinet_addr, NULL, hHookinet_addr);
+		LhSetExclusiveACL(Hookinet_addr_ACLEntries, 1, hHookinet_addr);
+	}
+	if (realInternetReadFile != NULL)
+	{
+		LhInstallHook(realInternetReadFile, MyInternetReadFile, NULL, hHookInternetReadFile);
+		LhSetExclusiveACL(HookInternetReadFile_ACLEntries, 1, hHookInternetReadFile);
+	}
+	if (realInternetWriteFile != NULL)
+	{
+		LhInstallHook(realInternetWriteFile, MyInternetWriteFile, NULL, hHookInternetWriteFile);
+		LhSetExclusiveACL(HookInternetWriteFile_ACLEntries, 1, hHookInternetWriteFile);
+	}
+	if (realNetShareEnum != NULL)
+	{
+		LhInstallHook(realNetShareEnum, MyNetShareEnum, NULL, hHookNetShareEnum);
+		LhSetExclusiveACL(HookNetShareEnum_ACLEntries, 1, hHookNetShareEnum);
+	}
+	if (realrecv != NULL)
+	{
+		LhInstallHook(realrecv, Myrecv, NULL, hHookrecv);
+		LhSetExclusiveACL(Hookrecv_ACLEntries, 1, hHookrecv);
+	}
+	if (realWSAStartup != NULL)
+	{
+		LhInstallHook(realWSAStartup, MyWSAStartup, NULL, hHookWSAStartup);
+		LhSetExclusiveACL(HookWSAStartup_ACLEntries, 1, hHookWSAStartup);
+	}
+	if (realInternetOpenW != NULL)
+	{
+		LhInstallHook(realInternetOpenW, MyInternetOpenW, NULL, hHookInternetOpenW);
+		LhSetExclusiveACL(HookInternetOpenW_ACLEntries, 1, hHookInternetOpenW);
+	}
+	if (realInternetOpenUrlW != NULL)
+	{
+		LhInstallHook(realInternetOpenUrlW, MyInternetOpenUrlW, NULL, hHookInternetOpenUrlW);
+		LhSetExclusiveACL(HookInternetOpenUrlW_ACLEntries, 1, hHookInternetOpenUrlW);
+	}
+	if (realURLDownloadToFileW != NULL)
+	{
+		LhInstallHook(realURLDownloadToFileW, MyURLDownloadToFileW, NULL, hHookURLDownloadToFileW);
+		LhSetExclusiveACL(HookURLDownloadToFileW_ACLEntries, 1, hHookURLDownloadToFileW);
+	}
+	if (realFtpPutFileW != NULL)
+	{
+		LhInstallHook(realFtpPutFileW, MyFtpPutFileW, NULL, hHookFtpPutFileW);
+		LhSetExclusiveACL(HookFtpPutFileW_ACLEntries, 1, hHookFtpPutFileW);
+	}
+	if (realHttpSendRequestW != NULL)
+	{
+		LhInstallHook(realHttpSendRequestW, MyHttpSendRequestW, NULL, hHookHttpSendRequestW);
+		LhSetExclusiveACL(HookHttpSendRequestW_ACLEntries, 1, hHookHttpSendRequestW);
+	}
+	if (realHttpSendRequestExW != NULL)
+	{
+		LhInstallHook(realHttpSendRequestExW, MyHttpSendRequestExW, NULL, hHookHttpSendRequestExW);
+		LhSetExclusiveACL(HookHttpSendRequestExW_ACLEntries, 1, hHookHttpSendRequestExW);
+	}
+	if (realHttpOpenRequestW != NULL)
+	{
+		LhInstallHook(realHttpOpenRequestW, MyHttpOpenRequestW, NULL, hHookHttpOpenRequestW);
+		LhSetExclusiveACL(HookHttpOpenRequestW_ACLEntries, 1, hHookHttpOpenRequestW);
+	}
+	if (realInternetConnectW != NULL)
+	{
+		LhInstallHook(realInternetConnectW, MyInternetConnectW, NULL, hHookInternetConnectW);
+		LhSetExclusiveACL(HookInternetConnectW_ACLEntries, 1, hHookInternetConnectW);
+	}
+	if (reallisten != NULL)
+	{
+		LhInstallHook(reallisten, Mylisten, NULL, hHooklisten);
+		LhSetExclusiveACL(Hooklisten_ACLEntries, 1, hHooklisten);
+	}
+	if (realInternetOpenUrlA != NULL)
+	{
+		LhInstallHook(realInternetOpenUrlA, MyInternetOpenUrlA, NULL, hHookInternetOpenUrlA);
+		LhSetExclusiveACL(HookInternetOpenUrlA_ACLEntries, 1, hHookInternetOpenUrlA);
+	}
+	if (realHttpOpenRequestA != NULL)
+	{
+		LhInstallHook(realHttpOpenRequestA, MyHttpOpenRequestA, NULL, hHookHttpOpenRequestA);
+		LhSetExclusiveACL(HookHttpOpenRequestA_ACLEntries, 1, hHookHttpOpenRequestA);
+	}
+	//NetworkAPI DoHook finished
 }
 
 
@@ -1170,9 +1374,6 @@ void DoUnHook()
 	hHookTerminateProcess = NULL;
 	//ProcessAPI DoUnHook finished
 
-	//NetworkAPI DoUnHook
-	//NetworkAPI DoUnHook finished
-
 	//RegAPI DoUnHook
 	delete      hHookRegOpenKeyExW;
 	delete      hHookRegOpenKeyW;
@@ -1207,8 +1408,55 @@ void DoUnHook()
 	hHookRegUnLoadKey = NULL;
 	//RegAPI DoUnHook finished
 
-	//OtherAPI DoUnHook
-	//OtherAPI DoUnHook finished
+	//NetworkAPI DoUnHook
+	delete hHookaccept;
+	delete hHooksend;
+	delete hHookbind;
+	delete hHookconnect;
+	delete hHookConnectNamedPipe;
+	delete hHookgethostname;
+	delete hHookinet_addr;
+	delete hHookInternetReadFile;
+	delete hHookInternetWriteFile;
+	delete hHookNetShareEnum;
+	delete hHookrecv;
+	delete hHookWSAStartup;
+	delete hHookInternetOpenW;
+	delete hHookInternetOpenUrlW;
+	delete hHookURLDownloadToFileW;
+	delete hHookFtpPutFileW;
+	delete hHookHttpSendRequestW;
+	delete hHookHttpSendRequestExW;
+	delete hHookHttpOpenRequestW;
+	delete hHookInternetConnectW;
+	delete hHooklisten;
+	delete hHookInternetOpenUrlA;
+	delete hHookHttpOpenRequestA;
+
+	hHookaccept = NULL;
+	hHooksend = NULL;
+	hHookbind = NULL;
+	hHookconnect = NULL;
+	hHookConnectNamedPipe = NULL;
+	hHookgethostname = NULL;
+	hHookinet_addr = NULL;
+	hHookInternetReadFile = NULL;
+	hHookInternetWriteFile = NULL;
+	hHookNetShareEnum = NULL;
+	hHookrecv = NULL;
+	hHookWSAStartup = NULL;
+	hHookInternetOpenW = NULL;
+	hHookInternetOpenUrlW = NULL;
+	hHookURLDownloadToFileW = NULL;
+	hHookFtpPutFileW = NULL;
+	hHookHttpSendRequestW = NULL;
+	hHookHttpSendRequestExW = NULL;
+	hHookHttpOpenRequestW = NULL;
+	hHookInternetConnectW = NULL;
+	hHooklisten = NULL;
+	hHookInternetOpenUrlA = NULL;
+	hHookHttpOpenRequestA = NULL;
+	//NetworkAPI DoUnHook finished
 
 	status = LhWaitForPendingRemovals();
 	if (!SUCCEEDED(status))
