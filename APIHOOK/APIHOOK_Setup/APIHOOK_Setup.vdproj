@@ -27,6 +27,12 @@
         }
         "Entry"
         {
+        "MsmKey" = "8:_2DB20BA312294AE7A23F1F188EEFA76D"
+        "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
         "MsmKey" = "8:_33DA01154EFA41778005CC2E97A076E3"
         "OwnerKey" = "8:_UNDEFINED"
         "MsmSig" = "8:_UNDEFINED"
@@ -35,6 +41,12 @@
         {
         "MsmKey" = "8:_39515ABDB6B44462A2FF93E027DE7BA5"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_88F3890646534B0097F19F0701A74F2E"
+        "OwnerKey" = "8:_106B59EBBA2549699F7DC0D861AF15C6"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
@@ -53,6 +65,30 @@
         {
         "MsmKey" = "8:_C367BC66BEF34A3B9BFF21E7C8BECC86"
         "OwnerKey" = "8:_UNDEFINED"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D4B35544CCD0DFCEC2147977BB3EEBC9"
+        "OwnerKey" = "8:_106B59EBBA2549699F7DC0D861AF15C6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_D4B35544CCD0DFCEC2147977BB3EEBC9"
+        "OwnerKey" = "8:_C367BC66BEF34A3B9BFF21E7C8BECC86"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E34EDCECB1B6F6BDE2E8FABF7E77E415"
+        "OwnerKey" = "8:_106B59EBBA2549699F7DC0D861AF15C6"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_E34EDCECB1B6F6BDE2E8FABF7E77E415"
+        "OwnerKey" = "8:_C367BC66BEF34A3B9BFF21E7C8BECC86"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -134,6 +170,66 @@
         }
         "File"
         {
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_88F3890646534B0097F19F0701A74F2E"
+            {
+            "SourcePath" = "8:MSVCP140D.dll"
+            "TargetName" = "8:MSVCP140D.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_B0DC788760CA469F963AE172D508B0CC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_D4B35544CCD0DFCEC2147977BB3EEBC9"
+            {
+            "SourcePath" = "8:ucrtbased.dll"
+            "TargetName" = "8:ucrtbased.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_B0DC788760CA469F963AE172D508B0CC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{1FB2D0AE-D3B9-43D4-B9DD-F88EC61E35DE}:_E34EDCECB1B6F6BDE2E8FABF7E77E415"
+            {
+            "SourcePath" = "8:VCRUNTIME140D.dll"
+            "TargetName" = "8:VCRUNTIME140D.dll"
+            "Tag" = "8:"
+            "Folder" = "8:_B0DC788760CA469F963AE172D508B0CC"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
         }
         "FileType"
         {
@@ -201,15 +297,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:APIHOOK"
-        "ProductCode" = "8:{776A801C-803A-4A22-A656-02BBF3E73924}"
-        "PackageCode" = "8:{FDA5BFB6-2D2D-4178-B59F-67AEE65FF984}"
+        "ProductCode" = "8:{5192CD9C-8D76-42F5-8949-7C77DFF353A8}"
+        "PackageCode" = "8:{0F1E8E8F-CBD9-450C-AC92-84DAE2171F17}"
         "UpgradeCode" = "8:{E8DCF5E5-1E7F-4DD8-9833-51B35A44E2B0}"
         "AspNetVersion" = "8:2.0.50727.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:TRUE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.1"
+        "ProductVersion" = "8:1.0.2"
         "Manufacturer" = "8:michaelchen1996"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
@@ -786,6 +882,34 @@
             "OutputConfiguration" = "8:"
             "OutputGroupCanonicalName" = "8:Built"
             "OutputProjectGuid" = "8:{B2857AB9-1D34-4B4C-BCB8-9D5A45080A85}"
+            "ShowKeyOutput" = "11:TRUE"
+                "ExcludeFilters"
+                {
+                }
+            }
+            "{5259A561-127C-4D43-A0A1-72F10C7B3BF8}:_2DB20BA312294AE7A23F1F188EEFA76D"
+            {
+            "SourcePath" = "8:..\\x64\\Debug\\TEST_NetAPI.exe"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_AB80895BA63D46DEA7FBBA9DE3423986"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:FALSE"
+            "IsolateTo" = "8:"
+            "ProjectOutputGroupRegister" = "3:1"
+            "OutputConfiguration" = "8:"
+            "OutputGroupCanonicalName" = "8:Built"
+            "OutputProjectGuid" = "8:{C29764AD-31C2-476D-8A38-EE8A68E5B82C}"
             "ShowKeyOutput" = "11:TRUE"
                 "ExcludeFilters"
                 {
