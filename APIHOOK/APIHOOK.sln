@@ -31,6 +31,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TEST_RegAPI", "TEST_RegAPI\
 EndProject
 Project("{54435603-DBB4-11D2-8724-00A0C9A8B90C}") = "APIHOOK_Setup", "APIHOOK_Setup\APIHOOK_Setup.vdproj", "{F767BD5A-D99F-4A4C-9844-B257808001F1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TEST_NetAPI", "TEST_NetAPI\TEST_NetAPI.vcxproj", "{C29764AD-31C2-476D-8A38-EE8A68E5B82C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -107,6 +109,14 @@ Global
 		{F767BD5A-D99F-4A4C-9844-B257808001F1}.Debug|x86.ActiveCfg = Debug
 		{F767BD5A-D99F-4A4C-9844-B257808001F1}.Release|x64.ActiveCfg = Release
 		{F767BD5A-D99F-4A4C-9844-B257808001F1}.Release|x86.ActiveCfg = Release
+		{C29764AD-31C2-476D-8A38-EE8A68E5B82C}.Debug|x64.ActiveCfg = Debug|x64
+		{C29764AD-31C2-476D-8A38-EE8A68E5B82C}.Debug|x64.Build.0 = Debug|x64
+		{C29764AD-31C2-476D-8A38-EE8A68E5B82C}.Debug|x86.ActiveCfg = Debug|Win32
+		{C29764AD-31C2-476D-8A38-EE8A68E5B82C}.Debug|x86.Build.0 = Debug|Win32
+		{C29764AD-31C2-476D-8A38-EE8A68E5B82C}.Release|x64.ActiveCfg = Release|x64
+		{C29764AD-31C2-476D-8A38-EE8A68E5B82C}.Release|x64.Build.0 = Release|x64
+		{C29764AD-31C2-476D-8A38-EE8A68E5B82C}.Release|x86.ActiveCfg = Release|Win32
+		{C29764AD-31C2-476D-8A38-EE8A68E5B82C}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
