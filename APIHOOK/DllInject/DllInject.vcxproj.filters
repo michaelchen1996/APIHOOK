@@ -45,4 +45,14 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="TargetList.txt">
+      <Filter>资源文件</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="EasyHook64.dll">
+      <Filter>资源文件</Filter>
+    </None>
+  </ItemGroup>
 </Project>
