@@ -11,13 +11,13 @@ void SendLog(LPCTSTR szAPIMessage)
 	SIZE_T dwLogLength;
 	DWORD dwMailslotWritten;
 
-	StringCbCopy(szLogMessage, MAX_LOG_SIZE, TEXT(""));
+	StringCbCopy(szLogMessage, MAX_LOG_SIZE, TEXT("{\"time\":\""));
 	CatLogTime(szLogMessage);
-	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("|"));
+	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("\",\"path\":\""));
 	CatProcessPath(szLogMessage);
-	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("|"));
+	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("\","));
 	StringCbCat(szLogMessage, MAX_LOG_SIZE, szAPIMessage);
-
+	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("}\r\n"));
 	OutputDebugString(szLogMessage);
 	StringCbLength(szLogMessage, MAX_LOG_SIZE, &dwLogLength);
 	if (dwLogLength > MAX_LOG_SIZE)
@@ -43,7 +43,7 @@ void CatLogTime(LPTSTR szLogMessage) {
 	GetLocalTime(&sys);
 	wsprintf(
 		szTime, 
-		TEXT("%4d-%02d-%02d-%02d-%02d-%02d-%03d:\0"), 
+		TEXT("%4d-%02d-%02d-%02d-%02d-%02d-%03d\0"), 
 		sys.wYear, 
 		sys.wMonth, 
 		sys.wDay, 

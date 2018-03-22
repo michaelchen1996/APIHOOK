@@ -3,7 +3,7 @@
 #ifndef __SEND_LOG__
 #define __SEND_LOG__
 
-#define MAX_LOG_SIZE 260
+#define MAX_LOG_SIZE 2600
 
 extern HANDLE hWriteMailslot;
 

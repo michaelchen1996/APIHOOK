@@ -6,8 +6,8 @@
 #endif // !__LOG__
 
 
-#define MAX_LOG_SIZE 260
-#define MAX_FILE_SIZE 1024 * 1024
+#define MAX_LOG_SIZE 2600
+#define MAX_FILE_SIZE 10 * 1024
 
 
 void Log();
