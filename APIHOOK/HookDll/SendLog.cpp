@@ -5,7 +5,7 @@
 HANDLE hWriteMailslot = NULL;
 
 
-void SendLog(LPCTSTR szAPIMessage)
+void SendLog(LPCTSTR szAPI, LPCTSTR szParamList[], int n)
 {
 	TCHAR szLogMessage[MAX_LOG_SIZE];
 	SIZE_T dwLogLength;
@@ -13,11 +13,22 @@ void SendLog(LPCTSTR szAPIMessage)
 
 	StringCbCopy(szLogMessage, MAX_LOG_SIZE, TEXT("{\"time\":\""));
 	CatLogTime(szLogMessage);
-	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("\",\"path\":\""));
+	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("\",\"process\":\""));
 	CatProcessPath(szLogMessage);
-	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("\","));
-	StringCbCat(szLogMessage, MAX_LOG_SIZE, szAPIMessage);
-	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("}\r\n"));
+	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("\",\"api\":\""));
+	StringCbCat(szLogMessage, MAX_LOG_SIZE, szAPI);
+	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("\",\"param\":["));
+	for (int i = 0; i < n; i++)
+	{
+		if (i > 0)
+		{
+			StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT(","));
+		}
+		StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("\""));
+		StringCbCat(szLogMessage, MAX_LOG_SIZE, szParamList[i]);
+		StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("\""));
+	}
+	StringCbCat(szLogMessage, MAX_LOG_SIZE, TEXT("]}\r\n"));
 	OutputDebugString(szLogMessage);
 	StringCbLength(szLogMessage, MAX_LOG_SIZE, &dwLogLength);
 	if (dwLogLength > MAX_LOG_SIZE)

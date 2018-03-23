@@ -27,7 +27,7 @@ NTSTATUS MyZwSetInformationFile(
 			//StringCbCat(szLogBuf, MAX_LOG_SIZE, ((PFILE_RENAME_INFORMATION)FileInformation))
 		}
 		//StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\r\n"));
-		SendLog(szLogBuf);
+		//SendLog(szLogBuf);
 		status = realZwSetInformationFile(
 			FileHandle,
 			IoStatusBlock,
@@ -52,19 +52,15 @@ BOOL WINAPI MyReadFile(
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
 	TCHAR szFilepath[MAX_PATH];
+	LPCTSTR szParamList[1];
+	int n = 0;
 	if (hFile != NULL)
 	{
 		GetFinalPathNameByHandle(hFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
+		szParamList[0] = szFilepath;
+		n = 1;	
 	}
-	else
-	{
-		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
-	}
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"ReadFile\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, szFilepath);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	SendLog(TEXT("ReadFile"), szParamList, n);
 	return (realReadFile)(hFile, lpBuffer, nNumberOfBytesToRead, lpNumberOfBytesRead, lpOverlapped);
 }
 
@@ -78,19 +74,15 @@ BOOL WINAPI MySetFileTime(
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
 	TCHAR szFilepath[MAX_PATH];
+	LPCTSTR szParamList[1];
+	int n = 0;
 	if (hFile != NULL)
 	{
 		GetFinalPathNameByHandle(hFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
+		szParamList[0] = szFilepath;
+		n = 1;
 	}
-	else
-	{
-		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
-	}
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"SetFileTime\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, szFilepath);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	SendLog(TEXT("SetFileTime"), szParamList, n);
 	return (realSetFileTime)(hFile, lpCreationTime, lpLastAccessTime, lpLastWriteTime);
 }
 
@@ -102,19 +94,16 @@ BOOL WINAPI MySetFileValidData(
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
 	TCHAR szFilepath[MAX_PATH];
+	LPCTSTR szParamList[1];
+	int n = 0;
 	if (hFile != NULL)
 	{
 		GetFinalPathNameByHandle(hFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
+		szParamList[0] = szFilepath;
+		n = 1;
 	}
-	else
-	{
-		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
-	}
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"SetFileValidData\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, szFilepath);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	SendLog(TEXT("SetFileValidData"), szParamList, n);
+
 	return (realSetFileValidData)(hFile, ValidDataLength);
 }
 
@@ -125,19 +114,15 @@ BOOL WINAPI MySetEndOfFile(
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
 	TCHAR szFilepath[MAX_PATH];
+	LPCTSTR szParamList[1];
+	int n = 0;
 	if (hFile != NULL)
 	{
 		GetFinalPathNameByHandle(hFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
+		szParamList[0] = szFilepath;
+		n = 1;
 	}
-	else
-	{
-		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
-	}
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"SetEndOfFile\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, szFilepath);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	SendLog(TEXT("SetEndOfFile"), szParamList, n);
 	return (realSetEndOfFile)(hFile);
 }
 
@@ -149,13 +134,8 @@ BOOL WINAPI MyCreateHardLinkW(
 ) 
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"CreateHardLinkW\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\",\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpExistingFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	LPCTSTR szParamList[] = { lpFileName , lpExistingFileName };
+	SendLog(TEXT("CreateHardLinkW"), szParamList, 2);
 	return (realCreateHardLinkW)(lpFileName, lpExistingFileName, lpSecurityAttributes);
 }
 
@@ -166,11 +146,8 @@ BOOL WINAPI MySetFileAttributesW(
 ) 
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"SetFileAttributesW\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	LPCTSTR szParamList[] = { lpFileName };
+	SendLog(TEXT("SetFileAttributesW"), szParamList, 1);
 	return (realSetFileAttributesW)(lpFileName, dwFileAttributes);
 }
 
@@ -182,19 +159,15 @@ BOOL WINAPI MyFindNextFileW(
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
 	TCHAR szFilepath[MAX_PATH];
+	LPCTSTR szParamList[1];
+	int n = 0;
 	if (hFindFile != NULL)
 	{
 		GetFinalPathNameByHandle(hFindFile, szFilepath, MAX_PATH, VOLUME_NAME_DOS);
+		n++;
+		szParamList[0] = szFilepath;
 	}
-	else
-	{
-		StringCbCopy(szFilepath, MAX_PATH, TEXT("NULL"));
-	}
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"FindNextFileW\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, szFilepath);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	SendLog(TEXT("FindNextFileW"), szParamList, n);
 	return (realFindNextFileW)(hFindFile, lpFindFileData);
 }
 
@@ -205,11 +178,8 @@ HANDLE WINAPI MyFindFirstFileW(
 ) 
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"FindFirstFileW\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	LPCTSTR szParamList[] = { lpFileName };
+	SendLog(TEXT("FindFirstFileW"), szParamList, 1);
 	return (realFindFirstFileW)(lpFileName, lpFindFileData);
 }
 
@@ -219,11 +189,8 @@ BOOL WINAPI MyDeleteFileW(
 ) 
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"DeleteFileW\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	LPCTSTR szParamList[] = { lpFileName };
+	SendLog(TEXT("DeleteFileW"), szParamList, 1);
 	return (realDeleteFileW)(lpFileName);
 }
 
@@ -235,13 +202,8 @@ BOOL WINAPI MyCopyFileW(
 ) 
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"MyCopyFileW\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpExistingFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\",\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpNewFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	LPCTSTR szParamList[] = { lpExistingFileName, lpNewFileName };
+	SendLog(TEXT("CopyFileW"), szParamList, 2);
 	return (realCopyFileW)(lpExistingFileName, lpNewFileName, bFailIfExists);
 }
 
@@ -252,13 +214,8 @@ BOOL WINAPI MyMoveFileW(
 ) 
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"MoveFileW\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpExistingFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\",\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpNewFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	LPCTSTR szParamList[] = { lpExistingFileName, lpNewFileName };
+	SendLog(TEXT("MoveFileW"), szParamList, 2);
 	return (realMoveFileW)(lpExistingFileName, lpNewFileName);
 
 }
@@ -275,11 +232,8 @@ HANDLE WINAPI MyCreateFileW(
 )
 {
 	TCHAR szLogBuf[MAX_LOG_SIZE];
-	StringCbCopy(szLogBuf, MAX_LOG_SIZE, TEXT("\"api\":\"CreateFileW\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT(",\"param\":[\""));
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, lpFileName);
-	StringCbCat(szLogBuf, MAX_LOG_SIZE, TEXT("\"]"));
-	SendLog(szLogBuf);
+	LPCTSTR szParamList[] = { lpFileName };
+	SendLog(TEXT("CreateFileW"), szParamList, 1);
 	return (realCreateFileW)(lpFileName, dwDesiredAccess, dwShareMode,
 		lpSecurityAttributes, dwCreationDisposition, dwFlagsAndAttributes, hTemplateFile);
 

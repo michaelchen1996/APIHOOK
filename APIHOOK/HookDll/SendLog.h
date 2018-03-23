@@ -7,7 +7,7 @@
 
 extern HANDLE hWriteMailslot;
 
-void SendLog(LPCTSTR szLogMessage);
+void SendLog(LPCTSTR szAPI, LPCTSTR szParamList[], int n);
 void CatProcessPath(LPTSTR szLogMessage);
 void CatLogTime(LPTSTR szLogMessage);
 
