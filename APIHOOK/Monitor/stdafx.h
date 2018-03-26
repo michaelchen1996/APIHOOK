@@ -7,11 +7,14 @@
 
 #include "targetver.h"
 
+#include <winsock2.h> 
+#include <Ws2tcpip.h> 
+
 #include <stdio.h>
 #include <tchar.h>
 #include <windows.h>
 #include <strsafe.h>
 
-
+#pragma comment(lib,"ws2_32.lib")  
 
 // TODO: 在此处引用程序需要的其他头文件

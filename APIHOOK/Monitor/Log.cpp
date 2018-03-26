@@ -17,6 +17,29 @@ void Log()
 	TCHAR szCurrentLogPath[MAX_PATH];
 	TCHAR szCurrentDirectory[MAX_PATH];
 
+	//get a connection with server
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+	{
+		printf("WSAStartup failed\n");
+	}
+	SOCKET sServer = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (sServer == INVALID_SOCKET)
+	{
+		printf("socket failed\n");
+	}
+	SOCKADDR_IN addrServ;
+	addrServ.sin_family = AF_INET;
+	addrServ.sin_port = htons(8081);
+	InetPton(AF_INET, L"192.168.1.154", &(addrServ.sin_addr));
+	int ret = connect(sServer, (SOCKADDR*)&addrServ, sizeof(SOCKADDR));
+	if (SOCKET_ERROR == ret)
+	{
+		printf("socket connect failed\n");
+		WSACleanup();
+		closesocket(sServer);
+	}
+
 	//Get log directory, in order to read config file
 	GetCurrentDirectory(MAX_PATH, szCurrentDirectory);
 	StringCbCopy(szCurrentLogPath, MAX_PATH, szCurrentDirectory);
@@ -93,6 +116,17 @@ void Log()
 				return;
 			}
 			dwFileSize += dwMessageSize;
+
+			//upload log to server
+			if (INVALID_SOCKET != sServer)
+			{
+				ret = send(sServer, (char*)szReadBuf, dwMessageSize, 0);
+				if (SOCKET_ERROR == ret)
+				{
+					printf("socket send failed\n");
+					closesocket(sServer);
+				}
+			}
 		}
 		if (!isStopped && dwMessageRemain <= 1)
 		{
@@ -103,9 +137,13 @@ void Log()
 	
 	CloseHandle(hLogFile);
 	hLogFile = NULL;
+	
 	CloseHandle(hSemaphoreStatus);
 	hSemaphoreStatus = NULL;
 
+	closesocket(sServer);
+	WSACleanup();
+	
 	OutputDebugString(TEXT("LogThread Finish\n"));
 
 	return;
@@ -130,3 +168,5 @@ void RefreshFileName(PTCHAR szCurrentLogPath, LPCTSTR szCurrentDirectory)
 	StringCbCopy(szCurrentLogPath, MAX_PATH, szCurrentDirectory);
 	StringCbCat(szCurrentLogPath, MAX_PATH, szBuf);
 }
+
+

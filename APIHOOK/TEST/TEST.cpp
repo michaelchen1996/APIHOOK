@@ -2,15 +2,62 @@
 //
 
 #include "stdafx.h"
-#include "windows.h"
-#include "strsafe.h"
-#include <tlhelp32.h>
+
+#pragma comment(lib,"ws2_32.lib")  
+#define  PORT 8081
 
 BOOL SetPrivilege(LPCTSTR lpszPrivilege, BOOL bEnablePrivilege);
 
 
 int main()
 {
+
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+	{
+		printf("WSAStartup failed\n");
+		return -1;
+	}
+
+	SOCKET sServer = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+	if (sServer == INVALID_SOCKET)
+	{
+		printf("socket failed\n");
+		return -1;
+	}
+
+	SOCKADDR_IN addrServ;
+	addrServ.sin_family = AF_INET;
+	addrServ.sin_port = htons(PORT);
+	//addrServ.sin_addr.S_un.S_addr = inet_addr("127.0.0.1");
+	InetPton(AF_INET, L"192.168.1.154", &(addrServ.sin_addr));
+
+	int ret = connect(sServer, (SOCKADDR*)&addrServ, sizeof(SOCKADDR));
+	if (SOCKET_ERROR == ret)
+	{
+		printf("socket connect failed\n");
+		WSACleanup();
+		closesocket(sServer);
+		return -1;
+	}
+
+	char szBuf[1024];
+	memset(szBuf, 0, sizeof(szBuf));
+	sprintf_s(szBuf, sizeof(szBuf), "Hello server");
+	ret = send(sServer, szBuf, strlen(szBuf), 0);
+	if (SOCKET_ERROR == ret)
+	{
+		printf("socket send failed\n");
+		closesocket(sServer);
+		return -1;
+	}
+	printf("%s\n", szBuf);
+	closesocket(sServer);
+	WSACleanup();
+
+	//system("PAUSE");
+
+	return 0;
 	/*
 	WCHAR szCurrentDirectory[MAX_PATH];
 	DWORD dwCurDirPathLen;
@@ -169,7 +216,7 @@ int main()
 	}
 	ResumeThread(hThread);
 
-	system("PAUSE");
+	//system("PAUSE");
     return 0;
 }
 
